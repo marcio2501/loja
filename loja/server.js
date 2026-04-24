@@ -19,6 +19,13 @@ const APP_SECRET = process.env.APP_SECRET;
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 /* ============================
+   CACHE RÁPIDO
+============================ */
+let cacheHome = null;
+let cacheTempo = 0;
+const CACHE_MS = 300000; // 5 minutos
+
+/* ============================
    ASSINATURA
 ============================ */
 function gerarAuth(payload){
@@ -43,7 +50,7 @@ return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signatu
 /* ============================
    CONSULTA API
 ============================ */
-async function buscarProdutos(keyword, limit = 50){
+async function buscarProdutos(keyword, limit = 10){
 
 try{
 
@@ -80,8 +87,7 @@ if(
 data &&
 data.data &&
 data.data.productOfferV2 &&
-data.data.productOfferV2.nodes &&
-data.data.productOfferV2.nodes.length > 0
+data.data.productOfferV2.nodes
 ){
 return data.data.productOfferV2.nodes;
 }
@@ -97,42 +103,47 @@ return [];
 }
 
 /* ============================
-   MAIS PROCURADOS UMBANDA
+   HOME RÁPIDA
 ============================ */
 async function buscarMaisProcurados(){
+
+/* usa cache */
+if(
+cacheHome &&
+(Date.now() - cacheTempo < CACHE_MS)
+){
+return cacheHome;
+}
 
 const termos = [
 
 "guia umbanda",
 "exu",
 "pomba gira",
-"preto velho",
-"caboclo",
-"orixa",
 "vela 7 dias",
 "banho descarrego",
-"ervas espirituais",
 "colar proteção",
-"imagem religiosa",
-"atabaque",
 "incenso",
-"defumador",
-"arruda",
-"quartzo rosa",
-"ametista"
+"imagem religiosa",
+"preto velho",
+"orixa"
 
 ];
 
+/* consulta tudo ao mesmo tempo */
+const promessas = termos.map(t =>
+buscarProdutos(t,5)
+);
+
+const resultados =
+await Promise.all(promessas);
+
 let todos = [];
 
-/* pega produtos populares */
-for(const termo of termos){
-
-const lista = await buscarProdutos(termo,5);
-
+/* junta tudo */
+resultados.forEach(lista=>{
 todos = todos.concat(lista);
-
-}
+});
 
 /* remove repetidos */
 const ids = new Set();
@@ -148,13 +159,10 @@ return true;
 
 });
 
-/* mantém ordem natural da Shopee
-   (mais relevantes primeiro) */
-
-/* máximo 50 */
+/* maximo 50 */
 todos = todos.slice(0,50);
 
-return {
+const resposta = {
 data:{
 productOfferV2:{
 nodes:todos
@@ -162,10 +170,16 @@ nodes:todos
 }
 };
 
+/* salva cache */
+cacheHome = resposta;
+cacheTempo = Date.now();
+
+return resposta;
+
 }
 
 /* ============================
-   HOME - MAIS PROCURADOS
+   HOME
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
@@ -176,31 +190,33 @@ res.json(data);
 });
 
 /* ============================
-   BUSCA INTELIGENTE
+   BUSCA INTELIGENTE RÁPIDA
 ============================ */
 app.get("/buscar/:termo", async(req,res)=>{
 
-const termo = req.params.termo.toLowerCase().trim();
+const termo =
+req.params.termo.toLowerCase().trim();
 
 const lista = [
 
 `${termo} umbanda`,
 `${termo} espiritual`,
-`${termo} religioso`,
-`${termo} esoterico`,
-`${termo} candomble`
+`${termo} religioso`
 
 ];
 
+/* paralelo */
+const promessas =
+lista.map(t=>buscarProdutos(t,10));
+
+const resultados =
+await Promise.all(promessas);
+
 let todos = [];
 
-for(const item of lista){
-
-const r = await buscarProdutos(item,15);
-
+resultados.forEach(r=>{
 todos = todos.concat(r);
-
-}
+});
 
 /* remove repetidos */
 const ids = new Set();
