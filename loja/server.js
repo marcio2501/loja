@@ -43,7 +43,7 @@ return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signatu
 /* ============================
    CONSULTA API
 ============================ */
-async function buscarProdutos(keyword, limit = 8){
+async function buscarProdutos(keyword, limit = 10){
 
 try{
 
@@ -96,8 +96,8 @@ return [];
 }
 
 /* ============================
-   VITRINE SOMENTE NICHO
-   Umbanda / Espiritual
+   VITRINE NICHO
+   até 50 produtos
 ============================ */
 async function buscarVitrineNicho(){
 
@@ -136,15 +136,15 @@ const termos = [
 
 ];
 
-/* embaralha */
+/* embaralha termos */
 termos.sort(()=>Math.random()-0.5);
 
-/* pega 10 categorias por rodada */
-const selecionados = termos.slice(0,10);
+/* pega 15 termos por rodada */
+const selecionados = termos.slice(0,15);
 
 /* busca paralelo */
 const promessas =
-selecionados.map(t=>buscarProdutos(t,6));
+selecionados.map(t=>buscarProdutos(t,8));
 
 const resultados =
 await Promise.all(promessas);
@@ -173,8 +173,8 @@ return true;
 /* embaralha produtos */
 todos.sort(()=>Math.random()-0.5);
 
-/* máximo 24 */
-todos = todos.slice(0,24);
+/* máximo 50 */
+todos = todos.slice(0,50);
 
 return {
 data:{
@@ -188,7 +188,6 @@ nodes:todos
 
 /* ============================
    HOME
-   Atualiza sempre diferente
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
@@ -216,8 +215,9 @@ const lista = [
 
 ];
 
+/* paralelo */
 const promessas =
-lista.map(t=>buscarProdutos(t,8));
+lista.map(t=>buscarProdutos(t,12));
 
 const resultados =
 await Promise.all(promessas);
@@ -242,8 +242,8 @@ return true;
 
 });
 
-/* máximo 24 */
-todos = todos.slice(0,24);
+/* máximo 50 */
+todos = todos.slice(0,50);
 
 res.json({
 data:{
