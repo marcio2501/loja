@@ -19,13 +19,6 @@ const APP_SECRET = process.env.APP_SECRET;
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 /* ============================
-   CACHE RÁPIDO
-============================ */
-let cacheHome = null;
-let cacheTempo = 0;
-const CACHE_MS = 300000; // 5 minutos
-
-/* ============================
    ASSINATURA
 ============================ */
 function gerarAuth(payload){
@@ -50,7 +43,7 @@ return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signatu
 /* ============================
    CONSULTA API
 ============================ */
-async function buscarProdutos(keyword, limit = 10){
+async function buscarProdutos(keyword, limit = 8){
 
 try{
 
@@ -103,37 +96,55 @@ return [];
 }
 
 /* ============================
-   HOME RÁPIDA
+   VITRINE SOMENTE NICHO
+   Umbanda / Espiritual
 ============================ */
-async function buscarMaisProcurados(){
-
-/* usa cache */
-if(
-cacheHome &&
-(Date.now() - cacheTempo < CACHE_MS)
-){
-return cacheHome;
-}
+async function buscarVitrineNicho(){
 
 const termos = [
 
 "guia umbanda",
 "exu",
 "pomba gira",
-"vela 7 dias",
-"banho descarrego",
-"colar proteção",
-"incenso",
-"imagem religiosa",
 "preto velho",
-"orixa"
+"caboclo",
+"orixa",
+"imagem religiosa umbanda",
+"vela 7 dias",
+"vela espiritual",
+"banho descarrego",
+"banho espiritual",
+"ervas espirituais",
+"arruda",
+"guiné",
+"alecrim",
+"colar proteção",
+"amuleto proteção",
+"incenso",
+"defumador",
+"incensario",
+"cristal",
+"ametista",
+"quartzo rosa",
+"pedra chakra",
+"tarot",
+"baralho cigano",
+"pendulo",
+"radiestesia",
+"atabaque",
+"tambor religioso"
 
 ];
 
-/* consulta tudo ao mesmo tempo */
-const promessas = termos.map(t =>
-buscarProdutos(t,5)
-);
+/* embaralha */
+termos.sort(()=>Math.random()-0.5);
+
+/* pega 10 categorias por rodada */
+const selecionados = termos.slice(0,10);
+
+/* busca paralelo */
+const promessas =
+selecionados.map(t=>buscarProdutos(t,6));
 
 const resultados =
 await Promise.all(promessas);
@@ -159,10 +170,13 @@ return true;
 
 });
 
-/* maximo 50 */
-todos = todos.slice(0,50);
+/* embaralha produtos */
+todos.sort(()=>Math.random()-0.5);
 
-const resposta = {
+/* máximo 24 */
+todos = todos.slice(0,24);
+
+return {
 data:{
 productOfferV2:{
 nodes:todos
@@ -170,27 +184,22 @@ nodes:todos
 }
 };
 
-/* salva cache */
-cacheHome = resposta;
-cacheTempo = Date.now();
-
-return resposta;
-
 }
 
 /* ============================
    HOME
+   Atualiza sempre diferente
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
-const data = await buscarMaisProcurados();
+const data = await buscarVitrineNicho();
 
 res.json(data);
 
 });
 
 /* ============================
-   BUSCA INTELIGENTE RÁPIDA
+   BUSCA INTELIGENTE
 ============================ */
 app.get("/buscar/:termo", async(req,res)=>{
 
@@ -201,13 +210,14 @@ const lista = [
 
 `${termo} umbanda`,
 `${termo} espiritual`,
-`${termo} religioso`
+`${termo} religioso`,
+`${termo} esoterico`,
+`${termo} proteção`
 
 ];
 
-/* paralelo */
 const promessas =
-lista.map(t=>buscarProdutos(t,10));
+lista.map(t=>buscarProdutos(t,8));
 
 const resultados =
 await Promise.all(promessas);
@@ -232,8 +242,8 @@ return true;
 
 });
 
-/* maximo 50 */
-todos = todos.slice(0,50);
+/* máximo 24 */
+todos = todos.slice(0,24);
 
 res.json({
 data:{
