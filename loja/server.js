@@ -12,7 +12,7 @@ app.use(express.static("public"));
 const APP_ID = process.env.APP_ID;
 const APP_SECRET = process.env.APP_SECRET;
 
-const API_URL = "https://affiliate.shopee.com.br/graphql";
+const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 app.get("/produtos", async (req, res) => {
 
