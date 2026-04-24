@@ -17,7 +17,9 @@ const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 /* =========================
    FUNÇÃO CONSULTAR SHOPEE
 ========================= */
-async function buscarProdutos(keyword, limit = 100) {
+async function buscarProdutos(keyword, limit = 50) {
+
+try {
 
 const query = `
 {
@@ -58,115 +60,102 @@ headers: {
 body: payload
 });
 
-return await resposta.json();
+const data = await resposta.json();
+
+return data;
+
+} catch (erro) {
+
+return {
+erro: erro.message
+};
+
+}
+
 }
 
 /* =========================
-   TODA LOJA GERAL
+   TODA LOJA
 ========================= */
 app.get("/produtos", async (req, res) => {
-try {
 
 const data = await buscarProdutos(
 "umbanda candomble quimbanda esoterico tarot catolico cristais incensos velas espiritual",
-500
+50
 );
 
 res.json(data);
 
-} catch (erro) {
-res.status(500).json({ erro: erro.message });
-}
 });
 
 /* =========================
    UMBANDA
 ========================= */
 app.get("/produtos/umbanda", async (req, res) => {
-try {
 
 const data = await buscarProdutos(
 "umbanda candomble quimbanda exu pomba gira preto velho caboclo orixa guia colar atabaque roupa branca ervas",
-300
+50
 );
 
 res.json(data);
 
-} catch (erro) {
-res.status(500).json({ erro: erro.message });
-}
 });
 
 /* =========================
    INCENSOS
 ========================= */
 app.get("/produtos/incensos", async (req, res) => {
-try {
 
 const data = await buscarProdutos(
 "incenso defumador mirra benjoim copal sandalwood resina incensario aromaterapia",
-300
+50
 );
 
 res.json(data);
 
-} catch (erro) {
-res.status(500).json({ erro: erro.message });
-}
 });
 
 /* =========================
    TAROT
 ========================= */
 app.get("/produtos/tarot", async (req, res) => {
-try {
 
 const data = await buscarProdutos(
 "tarot baralho cigano cartas oracle runas pendulo radiestesia toalha tarot",
-300
+50
 );
 
 res.json(data);
 
-} catch (erro) {
-res.status(500).json({ erro: erro.message });
-}
 });
 
 /* =========================
    CATOLICO
 ========================= */
 app.get("/produtos/catolico", async (req, res) => {
-try {
 
 const data = await buscarProdutos(
 "catolico santo nossa senhora sao jorge terço crucifixo escapulario medalha biblia anjo",
-300
+50
 );
 
 res.json(data);
 
-} catch (erro) {
-res.status(500).json({ erro: erro.message });
-}
 });
 
 /* =========================
    CRISTAIS
 ========================= */
 app.get("/produtos/cristais", async (req, res) => {
-try {
 
 const data = await buscarProdutos(
 "cristais pedras ametista quartzo rosa citrino obsidiana turmalina selenita energia chakra",
-300
+50
 );
 
 res.json(data);
 
-} catch (erro) {
-res.status(500).json({ erro: erro.message });
-}
 });
 
 /* =========================
