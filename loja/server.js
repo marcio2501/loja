@@ -23,7 +23,7 @@ const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 ============================ */
 let cacheHome = null;
 let cacheTempo = 0;
-const CACHE_MS = 10000; // 10 segundos
+const CACHE_MS = 10000;
 
 /* ============================
    ASSINATURA
@@ -50,7 +50,7 @@ return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signatu
 /* ============================
    CONSULTA API
 ============================ */
-async function buscarProdutos(keyword, limit = 10){
+async function buscarProdutos(keyword, limit = 12){
 
 try{
 
@@ -130,6 +130,7 @@ const palavras = [
 "incenso",
 "defumador",
 "incensario",
+"incensário",
 "imagem",
 "santo",
 "religiosa",
@@ -146,19 +147,43 @@ const palavras = [
 
 return lista.filter(p=>{
 
-const nome =
-(p.productName || "").toLowerCase();
+const nome = (p.productName || "").toLowerCase();
 
-return palavras.some(t =>
-nome.includes(t)
-);
+return palavras.some(t => nome.includes(t));
 
 });
 
 }
 
 /* ============================
-   VITRINE NICHO REAL
+   REMOVE REPETIDOS
+============================ */
+function removerDuplicados(lista){
+
+const ids = new Set();
+
+return lista.filter(p=>{
+
+if(ids.has(p.itemId)){
+return false;
+}
+
+ids.add(p.itemId);
+return true;
+
+});
+
+}
+
+/* ============================
+   EMBARALHAR
+============================ */
+function embaralhar(lista){
+return lista.sort(()=>Math.random()-0.5);
+}
+
+/* ============================
+   VITRINE HOME 48
 ============================ */
 async function buscarMaisProcurados(){
 
@@ -194,15 +219,13 @@ const termos = [
 
 ];
 
-/* embaralha */
-termos.sort(()=>Math.random()-0.5);
+embaralhar(termos);
 
-/* escolhe 12 */
-const escolhidos = termos.slice(0,12);
+/* usa 16 termos */
+const escolhidos = termos.slice(0,16);
 
-/* paralelo */
 const promessas =
-escolhidos.map(t=>buscarProdutos(t,8));
+escolhidos.map(t => buscarProdutos(t,8));
 
 const resultados =
 await Promise.all(promessas);
@@ -213,28 +236,12 @@ resultados.forEach(lista=>{
 todos = todos.concat(lista);
 });
 
-/* filtra nicho */
 todos = filtrarNicho(todos);
+todos = removerDuplicados(todos);
+todos = embaralhar(todos);
 
-/* remove repetidos */
-const ids = new Set();
-
-todos = todos.filter(p=>{
-
-if(ids.has(p.itemId)){
-return false;
-}
-
-ids.add(p.itemId);
-return true;
-
-});
-
-/* embaralha */
-todos.sort(()=>Math.random()-0.5);
-
-/* maximo 50 */
-todos = todos.slice(0,50);
+/* EXATAMENTE 48 */
+todos = todos.slice(0,48);
 
 const resposta = {
 data:{
@@ -263,7 +270,7 @@ res.json(data);
 });
 
 /* ============================
-   BUSCA INTELIGENTE
+   BUSCA 48 RESULTADOS
 ============================ */
 app.get("/buscar/:termo", async(req,res)=>{
 
@@ -277,13 +284,18 @@ const lista = [
 `${termo} religioso`,
 `${termo} esoterico`,
 `${termo} proteção`,
+`${termo} guia`,
+`${termo} vela`,
+`${termo} cristal`,
+`${termo} banho`,
+`${termo} incenso`,
 `${termo} exu`,
-`${termo} guia`
+`${termo} pomba gira`
 
 ];
 
 const promessas =
-lista.map(t=>buscarProdutos(t,12));
+lista.map(t => buscarProdutos(t,8));
 
 const resultados =
 await Promise.all(promessas);
@@ -294,25 +306,12 @@ resultados.forEach(r=>{
 todos = todos.concat(r);
 });
 
-/* filtra nicho */
 todos = filtrarNicho(todos);
+todos = removerDuplicados(todos);
+todos = embaralhar(todos);
 
-/* remove repetidos */
-const ids = new Set();
-
-todos = todos.filter(p=>{
-
-if(ids.has(p.itemId)){
-return false;
-}
-
-ids.add(p.itemId);
-return true;
-
-});
-
-/* maximo 50 */
-todos = todos.slice(0,50);
+/* EXATAMENTE 48 */
+todos = todos.slice(0,48);
 
 res.json({
 data:{
@@ -331,6 +330,9 @@ app.get("/",(req,res)=>{
 res.sendFile(path.join(__dirname,"public/index.html"));
 });
 
+/* ============================
+   START
+============================ */
 app.listen(10000,()=>{
-console.log("Servidor ON");
+console.log("Servidor ON porta 10000");
 });
