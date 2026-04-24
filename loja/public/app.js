@@ -2,23 +2,35 @@ async function carregarProdutos(url = "/produtos") {
 
 const box = document.getElementById("produtos");
 
-box.innerHTML = "<h2 style='padding:20px'>Carregando produtos...</h2>";
+box.innerHTML =
+"<h2 style='padding:20px;text-align:center'>🔄 Carregando produtos...</h2>";
 
 try {
 
 const r = await fetch(url);
+
+if (!r.ok) {
+throw new Error("Falha na requisição");
+}
+
 const data = await r.json();
 
 console.log(data);
 
-/* erro vindo da API */
-if (data.errors) {
+/* =========================
+   ERRO VINDO DA API
+========================= */
+if (data.errors || data.erro) {
+
 box.innerHTML =
-"<h2 style='padding:20px'>Erro da API ao buscar produtos.</h2>";
+"<h2 style='padding:20px;text-align:center'>⚠️ Erro ao buscar produtos.</h2>";
+
 return;
 }
 
-/* valida estrutura */
+/* =========================
+   VALIDA ESTRUTURA
+========================= */
 if (
 !data ||
 !data.data ||
@@ -26,8 +38,10 @@ if (
 !data.data.productOfferV2.nodes ||
 data.data.productOfferV2.nodes.length === 0
 ) {
+
 box.innerHTML =
-"<h2 style='padding:20px'>Nenhum produto encontrado.</h2>";
+"<h2 style='padding:20px;text-align:center'>🛍️ Nenhum produto encontrado.</h2>";
+
 return;
 }
 
@@ -35,6 +49,9 @@ const produtos = data.data.productOfferV2.nodes;
 
 let html = "";
 
+/* =========================
+   MONTA PRODUTOS
+========================= */
 produtos.forEach(p => {
 
 const nome = p.productName || "Produto";
@@ -44,12 +61,21 @@ const link = p.offerLink || "#";
 
 html += `
 <div class="card">
-<img src="${imagem}" onerror="this.src='https://via.placeholder.com/300x300?text=Produto'">
+
+<img 
+src="${imagem}" 
+alt="${nome}"
+loading="lazy"
+onerror="this.src='https://via.placeholder.com/300x300?text=Produto'">
+
 <div class="title">${nome}</div>
+
 <div class="price">R$ ${preco}</div>
-<a class="btn" href="${link}" target="_blank">
+
+<a class="btn" href="${link}" target="_blank" rel="noopener noreferrer">
 Comprar
 </a>
+
 </div>
 `;
 
@@ -62,10 +88,20 @@ box.innerHTML = html;
 console.log(erro);
 
 box.innerHTML =
-"<h2 style='padding:20px'>Erro ao carregar produtos.</h2>";
+"<h2 style='padding:20px;text-align:center'>❌ Erro ao carregar produtos.</h2>";
 
 }
 
 }
 
-carregarProdutos();
+/* =========================
+   MENU CATEGORIAS
+========================= */
+function abrirCategoria(tipo) {
+carregarProdutos("/produtos/" + tipo);
+}
+
+/* =========================
+   INICIAR HOME
+========================= */
+carregarProdutos("/produtos");
