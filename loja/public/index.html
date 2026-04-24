@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -55,10 +55,7 @@ background:rgba(243,238,228,.94);
 backdrop-filter:blur(12px);
 -webkit-backdrop-filter:blur(12px);
 border-bottom:1px solid rgba(0,0,0,.03);
-padding:
-calc(env(safe-area-inset-top) + 10px)
-12px
-10px;
+padding:calc(env(safe-area-inset-top) + 10px) 12px 10px;
 transition:all .28s ease;
 }
 
@@ -66,8 +63,6 @@ transition:all .28s ease;
 max-width:1500px;
 margin:auto;
 }
-
-/* BANNER */
 
 .brand-row{
 display:flex;
@@ -133,10 +128,7 @@ box-shadow:var(--shadow);
 /* HEADER MINI */
 
 header.mini{
-padding:
-calc(env(safe-area-inset-top) + 8px)
-12px
-8px;
+padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;
 }
 
 header.mini .brand-row{
@@ -445,11 +437,9 @@ Buscar
 </header>
 
 <main class="container">
-
 <div id="produtos" class="status">
 Carregando produtos...
 </div>
-
 </main>
 
 <!-- MODAL -->
@@ -500,9 +490,13 @@ function moeda(v){
 return Number(v || 0).toFixed(2);
 }
 
+/* =========================
+   CARREGA 48 ITENS
+========================= */
 async function carregarProdutos(url="/produtos"){
 
 const box=document.getElementById("produtos");
+
 box.className="status";
 box.innerHTML="Carregando produtos...";
 
@@ -516,7 +510,9 @@ box.innerHTML="Nenhum produto encontrado.";
 return;
 }
 
-let produtos=data.data.productOfferV2.nodes.slice(0,24);
+/* PEGA 48 */
+let produtos=data.data.productOfferV2.nodes.slice(0,48);
+
 let html='<div class="grid">';
 
 produtos.forEach(p=>{
@@ -531,14 +527,18 @@ html+=`
 onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
 
 <div class="img-wrap">
-<img src="${img}" loading="lazy"
+<img
+src="${img}"
+loading="lazy"
 onerror="this.src='https://via.placeholder.com/400?text=Produto'">
 </div>
 
 <div class="title">${nome}</div>
+
 <div class="price">R$ ${preco}</div>
 
-<button class="btn"
+<button
+class="btn"
 onclick="event.stopPropagation();window.open('${link}','_blank')">
 Comprar
 </button>
@@ -549,14 +549,19 @@ Comprar
 });
 
 html+="</div>";
+
 box.className="";
 box.innerHTML=html;
 
 }catch(e){
+
 box.innerHTML="Erro ao carregar produtos.";
+
 }
 
 }
+
+/* MODAL */
 
 function abrirModal(nome,img,preco,link){
 
@@ -569,11 +574,14 @@ window.open(link,"_blank");
 };
 
 document.getElementById("modalProduto").style.display="block";
+
 }
 
 function fecharModal(){
 document.getElementById("modalProduto").style.display="none";
 }
+
+/* BUSCA 48 */
 
 function buscarProduto(){
 
@@ -584,14 +592,20 @@ carregarProdutos("/produtos");
 return;
 }
 
-carregarProdutos("/buscar/"+encodeURIComponent(termo));
+/* backend já retorna 48 */
+carregarProdutos("/buscar/" + encodeURIComponent(termo));
+
 }
 
 document.getElementById("buscar").addEventListener("keydown",function(e){
-if(e.key==="Enter") buscarProduto();
+
+if(e.key==="Enter"){
+buscarProduto();
+}
+
 });
 
-/* HEADER SUAVE */
+/* HEADER */
 
 let ativo=false;
 let rodando=false;
@@ -617,9 +631,17 @@ rodando=true;
 
 },{passive:true});
 
+/* FECHAR MODAL */
+
 document.getElementById("modalProduto").addEventListener("click",function(e){
-if(e.target.id==="modalProduto") fecharModal();
+
+if(e.target.id==="modalProduto"){
+fecharModal();
+}
+
 });
+
+/* START */
 
 carregarProdutos();
 </script>
