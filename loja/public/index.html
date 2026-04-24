@@ -79,19 +79,19 @@ transition:.28s ease;
 
 .logo-link{
 display:block;
-width:100%;
 text-decoration:none;
 }
 
 .logo{
 display:block;
-width:100%;
-max-width:720px;
+width:auto;
 height:auto;
+max-width:min(100%,860px);
+max-height:170px;
 margin:auto;
 object-fit:contain;
 border-radius:18px;
-transition:max-width .28s ease, border-radius .28s ease;
+transition:all .28s ease;
 }
 
 /* SEARCH */
@@ -102,6 +102,7 @@ grid-template-columns:minmax(0,1fr) 96px;
 gap:8px;
 max-width:780px;
 margin:auto;
+transition:.28s ease;
 }
 
 .busca-input{
@@ -135,7 +136,7 @@ header.mini{
 padding:
 calc(env(safe-area-inset-top) + 8px)
 12px
-10px;
+8px;
 }
 
 header.mini .brand-row{
@@ -144,9 +145,14 @@ margin-bottom:8px;
 }
 
 header.mini .logo{
-max-width:210px;
+max-width:220px;
+max-height:52px;
 margin:0;
 border-radius:12px;
+}
+
+header.mini .top-search{
+max-width:100%;
 }
 
 /* MAIN */
@@ -354,11 +360,12 @@ grid-template-columns:minmax(0,1fr) 110px;
 }
 
 .logo{
-max-width:860px;
+max-height:210px;
 }
 
 header.mini .logo{
-max-width:240px;
+max-width:250px;
+max-height:60px;
 }
 
 .title{
@@ -384,7 +391,7 @@ padding:18px;
 }
 
 .logo{
-max-width:980px;
+max-height:240px;
 }
 
 }
@@ -470,8 +477,6 @@ Fechar
 
 </div>
 </div>
-
-<!-- FOOTER -->
 
 <footer>
 <div class="footer-box">
@@ -586,7 +591,7 @@ document.getElementById("buscar").addEventListener("keydown",function(e){
 if(e.key==="Enter") buscarProduto();
 });
 
-/* HEADER */
+/* HEADER SUAVE */
 
 let ativo=false;
 let rodando=false;
