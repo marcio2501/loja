@@ -12,8 +12,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="estilo.css">
-
 <style>
 
 *{
@@ -28,19 +26,40 @@ background:#f8f6ef;
 color:#222;
 }
 
-/* HEADER */
 header{
 background:linear-gradient(90deg,#ffd000,#ffea00);
-color:#222;
-font-size:28px;
-font-weight:700;
-text-align:center;
 padding:18px;
 box-shadow:0 4px 10px rgba(0,0,0,.10);
-letter-spacing:1px;
+text-align:center;
 }
 
-/* GRID */
+header h1{
+font-size:28px;
+margin-bottom:12px;
+}
+
+.busca{
+display:flex;
+gap:8px;
+}
+
+.busca input{
+flex:1;
+padding:12px;
+border:none;
+border-radius:10px;
+font-size:15px;
+}
+
+.busca button{
+padding:12px 16px;
+border:none;
+border-radius:10px;
+background:#222;
+color:#fff;
+font-weight:700;
+}
+
 .grid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
@@ -48,68 +67,47 @@ gap:12px;
 padding:12px;
 }
 
-/* CARD */
 .card{
 background:#fff;
 border-radius:16px;
-overflow:hidden;
-box-shadow:0 4px 12px rgba(0,0,0,.08);
 padding:10px;
-transition:.2s;
+box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
-.card:hover{
-transform:translateY(-3px);
-}
-
-/* IMG */
 .card img{
 width:100%;
 height:160px;
 object-fit:cover;
 border-radius:12px;
-background:#f2f2f2;
 }
 
-/* TITLE */
 .title{
 font-size:14px;
 font-weight:600;
-margin-top:10px;
-line-height:1.35;
 height:40px;
 overflow:hidden;
-color:#222;
+margin-top:10px;
 }
 
-/* PRICE */
 .price{
-margin-top:8px;
 font-size:22px;
 font-weight:700;
 color:#c49700;
+margin-top:8px;
 }
 
-/* BUTTON */
 .btn{
 display:block;
 margin-top:10px;
+padding:10px;
 text-align:center;
 text-decoration:none;
 background:linear-gradient(90deg,#ffd000,#ffea00);
 color:#222;
 font-weight:700;
-padding:10px;
 border-radius:10px;
-font-size:15px;
-transition:.2s;
 }
 
-.btn:hover{
-transform:scale(1.03);
-}
-
-/* DESKTOP */
 @media(min-width:768px){
 
 .grid{
@@ -119,17 +117,7 @@ gap:20px;
 }
 
 .card img{
-height:230px;
-}
-
-.title{
-font-size:16px;
-height:48px;
-}
-
-header{
-font-size:34px;
-padding:24px;
+height:220px;
 }
 
 }
@@ -140,11 +128,110 @@ padding:24px;
 
 <body>
 
-<header>Nossos Produtos</header>
+<header>
+
+<h1>Nossos Produtos</h1>
+
+<div class="busca">
+
+<input
+type="text"
+id="buscar"
+placeholder="Buscar Exu, vela, guia...">
+
+<button onclick="buscarProduto()">
+Buscar
+</button>
+
+</div>
+
+</header>
 
 <div class="grid" id="produtos"></div>
 
-<script src="app.js"></script>
+<script>
+
+async function carregarProdutos(url="/produtos"){
+
+const box = document.getElementById("produtos");
+
+box.innerHTML =
+"<h2 style='padding:20px'>Carregando...</h2>";
+
+try{
+
+const r = await fetch(url);
+const data = await r.json();
+
+if(
+!data ||
+!data.data ||
+!data.data.productOfferV2 ||
+!data.data.productOfferV2.nodes
+){
+box.innerHTML =
+"<h2 style='padding:20px'>Nenhum produto encontrado.</h2>";
+return;
+}
+
+const produtos =
+data.data.productOfferV2.nodes;
+
+let html = "";
+
+produtos.forEach(p=>{
+
+html += `
+<div class="card">
+<img src="${p.imageUrl}">
+<div class="title">${p.productName}</div>
+<div class="price">R$ ${Number(p.price).toFixed(2)}</div>
+<a class="btn" href="${p.offerLink}" target="_blank">
+Comprar
+</a>
+</div>
+`;
+
+});
+
+box.innerHTML = html;
+
+}catch(e){
+
+box.innerHTML =
+"<h2 style='padding:20px'>Erro ao carregar.</h2>";
+
+}
+
+}
+
+function buscarProduto(){
+
+const termo =
+document.getElementById("buscar").value.trim();
+
+if(termo==""){
+carregarProdutos("/produtos");
+return;
+}
+
+carregarProdutos("/buscar/" + encodeURIComponent(termo));
+
+}
+
+document
+.getElementById("buscar")
+.addEventListener("keypress",function(e){
+
+if(e.key==="Enter"){
+buscarProduto();
+}
+
+});
+
+carregarProdutos();
+
+</script>
 
 </body>
 </html>
