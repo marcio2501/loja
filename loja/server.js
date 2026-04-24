@@ -15,7 +15,7 @@ const APP_SECRET = process.env.APP_SECRET;
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 /* ===================================
-   ASSINATURA SHOPEE
+   ASSINATURA API SHOPEE
 =================================== */
 function gerarAuth(payload) {
 
@@ -33,6 +33,7 @@ const signature = crypto
 .digest("hex");
 
 return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signature}`;
+
 }
 
 /* ===================================
@@ -84,14 +85,15 @@ return data;
 return null;
 
 } catch (erro) {
+
 return null;
+
 }
 
 }
 
 /* ===================================
    SISTEMA ANTI-FALHA
-   testa várias keywords até achar
 =================================== */
 async function buscarComFallback(listaKeywords) {
 
@@ -100,8 +102,11 @@ for (const termo of listaKeywords) {
 const resultado = await buscarProdutos(termo, 20);
 
 if (resultado) {
+
 console.log("ACHOU:", termo);
+
 return resultado;
+
 }
 
 }
@@ -117,17 +122,24 @@ nodes: []
 }
 
 /* ===================================
-   HOME ANTI-FALHA
+   HOME UMBANDA PROFISSIONAL
 =================================== */
 app.get("/produtos", async (req, res) => {
 
 const data = await buscarComFallback([
 
-"incenso vela cristal tarot espiritual",
-"religioso catolico santo terço vela",
-"umbanda guia colar ervas banho",
-"tarot baralho cigano cristal",
-"esoterico pendulo runas amuleto"
+"guia umbanda",
+"exu",
+"pomba gira",
+"preto velho",
+"caboclo",
+"orixa",
+"banho descarrego",
+"ervas espirituais",
+"vela 7 dias",
+"imagem religiosa",
+"atabaque",
+"colar proteção"
 
 ]);
 
@@ -136,15 +148,15 @@ res.json(data);
 });
 
 /* ===================================
-   UMBANDA
+   GUIAS E COLARES
 =================================== */
-app.get("/produtos/umbanda", async (req, res) => {
+app.get("/produtos/guias", async (req, res) => {
 
 const data = await buscarComFallback([
 
-"umbanda guia colar exu pomba gira",
-"caboclo preto velho orixa",
-"ervas umbanda banho descarrego"
+"guia umbanda",
+"colar proteção",
+"guia religiosa"
 
 ]);
 
@@ -153,15 +165,15 @@ res.json(data);
 });
 
 /* ===================================
-   INCENSOS
+   EXU E POMBA GIRA
 =================================== */
-app.get("/produtos/incensos", async (req, res) => {
+app.get("/produtos/exu", async (req, res) => {
 
 const data = await buscarComFallback([
 
-"incenso",
-"defumador",
-"incensario mirra"
+"exu",
+"pomba gira",
+"imagem exu"
 
 ]);
 
@@ -170,15 +182,15 @@ res.json(data);
 });
 
 /* ===================================
-   TAROT
+   PRETO VELHO E CABOCLO
 =================================== */
-app.get("/produtos/tarot", async (req, res) => {
+app.get("/produtos/entidades", async (req, res) => {
 
 const data = await buscarComFallback([
 
-"tarot",
-"baralho cigano",
-"runas pendulo"
+"preto velho",
+"caboclo",
+"imagem religiosa umbanda"
 
 ]);
 
@@ -187,15 +199,15 @@ res.json(data);
 });
 
 /* ===================================
-   CRISTAIS
+   BANHOS E ERVAS
 =================================== */
-app.get("/produtos/cristais", async (req, res) => {
+app.get("/produtos/banhos", async (req, res) => {
 
 const data = await buscarComFallback([
 
-"cristal",
-"ametista quartzo rosa",
-"pedra chakra energia"
+"banho descarrego",
+"ervas espirituais",
+"arruda guiné alecrim"
 
 ]);
 
@@ -204,15 +216,31 @@ res.json(data);
 });
 
 /* ===================================
-   CATOLICO
+   VELAS
 =================================== */
-app.get("/produtos/catolico", async (req, res) => {
+app.get("/produtos/velas", async (req, res) => {
 
 const data = await buscarComFallback([
 
-"terço crucifixo santo",
-"nossa senhora sao jorge",
-"biblia escapulario"
+"vela 7 dias",
+"vela espiritual",
+"vela religiosa"
+
+]);
+
+res.json(data);
+
+});
+
+/* ===================================
+   ATABAQUE
+=================================== */
+app.get("/produtos/atabaque", async (req, res) => {
+
+const data = await buscarComFallback([
+
+"atabaque",
+"tambor religioso"
 
 ]);
 
@@ -224,9 +252,13 @@ res.json(data);
    HOME HTML
 =================================== */
 app.get("/", (req, res) => {
+
 res.sendFile(path.join(__dirname, "public/index.html"));
+
 });
 
 app.listen(10000, () => {
+
 console.log("Servidor ON");
+
 });
