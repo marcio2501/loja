@@ -19,7 +19,7 @@ const APP_SECRET = process.env.APP_SECRET;
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 /* ============================
-   CACHE ULTRA RÁPIDO
+   CACHE
 ============================ */
 let cacheHome = null;
 let cacheTempo = 0;
@@ -103,11 +103,65 @@ return [];
 }
 
 /* ============================
-   HOME DINÂMICA NICHO
+   FILTRO DO NICHO
+============================ */
+function filtrarNicho(lista){
+
+const palavras = [
+
+"umbanda",
+"exu",
+"pomba gira",
+"preto velho",
+"caboclo",
+"orixa",
+"orixá",
+"guia",
+"colar",
+"pulseira",
+"vela",
+"7 dias",
+"banho",
+"descarrego",
+"erva",
+"arruda",
+"guiné",
+"alecrim",
+"incenso",
+"defumador",
+"incensario",
+"imagem",
+"santo",
+"religiosa",
+"tarot",
+"baralho cigano",
+"cristal",
+"ametista",
+"quartzo",
+"chakra",
+"proteção",
+"atabaque"
+
+];
+
+return lista.filter(p=>{
+
+const nome =
+(p.productName || "").toLowerCase();
+
+return palavras.some(t =>
+nome.includes(t)
+);
+
+});
+
+}
+
+/* ============================
+   VITRINE NICHO REAL
 ============================ */
 async function buscarMaisProcurados(){
 
-/* cache 10 segundos */
 if(
 cacheHome &&
 (Date.now() - cacheTempo < CACHE_MS)
@@ -118,35 +172,35 @@ return cacheHome;
 const termos = [
 
 "guia umbanda",
-"exu",
+"exu umbanda",
 "pomba gira",
-"vela 7 dias",
+"preto velho umbanda",
+"caboclo umbanda",
+"orixa umbanda",
+"vela 7 dias espiritual",
 "banho descarrego",
-"colar proteção",
-"incenso",
-"imagem religiosa",
-"preto velho",
-"orixa",
-"caboclo",
 "ervas espirituais",
-"amuleto proteção",
-"tarot",
+"arruda guiné",
+"colar proteção espiritual",
+"incenso espiritual",
+"defumador casa",
+"imagem umbanda",
+"tarot espiritual",
 "baralho cigano",
-"cristal",
-"ametista",
+"cristal energia",
 "quartzo rosa",
-"defumador",
-"atabaque"
+"ametista",
+"atabaque umbanda"
 
 ];
 
-/* embaralha termos */
+/* embaralha */
 termos.sort(()=>Math.random()-0.5);
 
-/* usa 12 termos por rodada */
+/* escolhe 12 */
 const escolhidos = termos.slice(0,12);
 
-/* busca paralelo */
+/* paralelo */
 const promessas =
 escolhidos.map(t=>buscarProdutos(t,8));
 
@@ -155,10 +209,12 @@ await Promise.all(promessas);
 
 let todos = [];
 
-/* junta */
 resultados.forEach(lista=>{
 todos = todos.concat(lista);
 });
+
+/* filtra nicho */
+todos = filtrarNicho(todos);
 
 /* remove repetidos */
 const ids = new Set();
@@ -174,7 +230,7 @@ return true;
 
 });
 
-/* embaralha produtos */
+/* embaralha */
 todos.sort(()=>Math.random()-0.5);
 
 /* maximo 50 */
@@ -188,7 +244,6 @@ nodes:todos
 }
 };
 
-/* salva cache */
 cacheHome = resposta;
 cacheTempo = Date.now();
 
@@ -221,11 +276,12 @@ const lista = [
 `${termo} espiritual`,
 `${termo} religioso`,
 `${termo} esoterico`,
-`${termo} proteção`
+`${termo} proteção`,
+`${termo} exu`,
+`${termo} guia`
 
 ];
 
-/* paralelo */
 const promessas =
 lista.map(t=>buscarProdutos(t,12));
 
@@ -237,6 +293,9 @@ let todos = [];
 resultados.forEach(r=>{
 todos = todos.concat(r);
 });
+
+/* filtra nicho */
+todos = filtrarNicho(todos);
 
 /* remove repetidos */
 const ids = new Set();
