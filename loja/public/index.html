@@ -24,7 +24,6 @@
 --card:#ffffff;
 --muted:#756e66;
 --shadow:0 10px 24px rgba(0,0,0,.07);
---radius:18px;
 }
 
 *{
@@ -52,54 +51,47 @@ header{
 position:sticky;
 top:0;
 z-index:999;
-padding:calc(env(safe-area-inset-top) + 10px) 12px 12px;
-background:rgba(243,238,228,.92);
+background:rgba(243,238,228,.94);
 backdrop-filter:blur(12px);
 -webkit-backdrop-filter:blur(12px);
 border-bottom:1px solid rgba(0,0,0,.03);
-transition:padding .28s ease, background .28s ease;
+padding:
+calc(env(safe-area-inset-top) + 10px)
+12px
+10px;
+transition:all .28s ease;
 }
+
+.header-wrap{
+max-width:1500px;
+margin:auto;
+}
+
+/* BANNER */
 
 .brand-row{
 display:flex;
 justify-content:center;
 align-items:center;
+margin-bottom:10px;
 transition:.28s ease;
-margin-bottom:12px;
 }
 
 .logo-link{
 display:block;
+width:100%;
 text-decoration:none;
 }
 
 .logo{
-width:100%;
-max-width:560px;
 display:block;
+width:100%;
+max-width:720px;
 height:auto;
+margin:auto;
+object-fit:contain;
 border-radius:18px;
-transition:
-max-width .32s ease,
-transform .32s ease,
-border-radius .32s ease;
-will-change:transform;
-}
-
-/* HEADER MINI */
-
-header.mini{
-padding:calc(env(safe-area-inset-top) + 8px) 12px 10px;
-}
-
-header.mini .brand-row{
-justify-content:flex-start;
-margin-bottom:8px;
-}
-
-header.mini .logo{
-max-width:220px;
-border-radius:14px;
+transition:max-width .28s ease, border-radius .28s ease;
 }
 
 /* SEARCH */
@@ -137,7 +129,27 @@ color:var(--dark);
 box-shadow:var(--shadow);
 }
 
-/* CONTAINER */
+/* HEADER MINI */
+
+header.mini{
+padding:
+calc(env(safe-area-inset-top) + 8px)
+12px
+10px;
+}
+
+header.mini .brand-row{
+justify-content:flex-start;
+margin-bottom:8px;
+}
+
+header.mini .logo{
+max-width:210px;
+margin:0;
+border-radius:12px;
+}
+
+/* MAIN */
 
 .container{
 max-width:1500px;
@@ -163,14 +175,13 @@ gap:12px;
 /* CARD */
 
 .card{
-background:rgba(255,255,255,.96);
+background:rgba(255,255,255,.97);
 border-radius:18px;
 padding:8px;
 box-shadow:var(--shadow);
 display:flex;
 flex-direction:column;
 cursor:pointer;
-min-width:0;
 transition:transform .15s ease;
 }
 
@@ -329,7 +340,7 @@ text-align:center;
 color:#8f867d;
 }
 
-/* TABLET */
+/* RESPONSIVO */
 
 @media(min-width:768px){
 
@@ -338,8 +349,16 @@ grid-template-columns:repeat(3,minmax(0,1fr));
 gap:14px;
 }
 
+.top-search{
+grid-template-columns:minmax(0,1fr) 110px;
+}
+
 .logo{
-max-width:640px;
+max-width:860px;
+}
+
+header.mini .logo{
+max-width:240px;
 }
 
 .title{
@@ -351,13 +370,7 @@ height:40px;
 font-size:20px;
 }
 
-.top-search{
-grid-template-columns:minmax(0,1fr) 110px;
 }
-
-}
-
-/* PC */
 
 @media(min-width:1100px){
 
@@ -370,9 +383,11 @@ gap:18px;
 padding:18px;
 }
 
+.logo{
+max-width:980px;
 }
 
-/* PC GRANDE */
+}
 
 @media(min-width:1400px){
 
@@ -382,22 +397,17 @@ grid-template-columns:repeat(5,minmax(0,1fr));
 
 }
 
-/* PERFORMANCE MOBILE */
-
-img{
-content-visibility:auto;
-}
-
 button,input{
 font:inherit;
 }
-
 </style>
 </head>
 
 <body>
 
 <header id="topo">
+
+<div class="header-wrap">
 
 <div class="brand-row">
 <a href="/" class="logo-link">
@@ -420,6 +430,8 @@ enterkeyhint="search">
 <button class="buscar-btn" onclick="buscarProduto()">
 Buscar
 </button>
+
+</div>
 
 </div>
 
@@ -462,27 +474,13 @@ Fechar
 <!-- FOOTER -->
 
 <footer>
-
 <div class="footer-box">
 
 <div class="footer-mini">
-
-<p>
-Axé Shop é uma vitrine digital independente.
-</p>
-
-<p>
-Não realizamos vendas diretas. Pagamento, entrega, garantia e atendimento são responsabilidade da loja de destino.
-</p>
-
-<p>
-Alguns links podem gerar comissão de afiliado sem custo adicional.
-</p>
-
-<p>
-Marcas citadas pertencem aos seus respectivos titulares.
-</p>
-
+<p>Axé Shop é uma vitrine digital independente.</p>
+<p>Pagamento, entrega e garantia são responsabilidade da loja de destino.</p>
+<p>Alguns links podem gerar comissão de afiliado sem custo adicional.</p>
+<p>Marcas citadas pertencem aos seus titulares.</p>
 </div>
 
 <div class="footer-copy">
@@ -490,7 +488,6 @@ Marcas citadas pertencem aos seus respectivos titulares.
 </div>
 
 </div>
-
 </footer>
 
 <script>
@@ -498,27 +495,23 @@ function moeda(v){
 return Number(v || 0).toFixed(2);
 }
 
-/* PRODUTOS */
-
 async function carregarProdutos(url="/produtos"){
 
-const box = document.getElementById("produtos");
-
+const box=document.getElementById("produtos");
 box.className="status";
 box.innerHTML="Carregando produtos...";
 
 try{
 
-const r = await fetch(url,{cache:"no-store"});
-const data = await r.json();
+const r=await fetch(url,{cache:"no-store"});
+const data=await r.json();
 
 if(!data?.data?.productOfferV2?.nodes){
 box.innerHTML="Nenhum produto encontrado.";
 return;
 }
 
-let produtos = data.data.productOfferV2.nodes.slice(0,24);
-
+let produtos=data.data.productOfferV2.nodes.slice(0,24);
 let html='<div class="grid">';
 
 produtos.forEach(p=>{
@@ -528,22 +521,19 @@ const img=p.imageUrl || "";
 const preco=moeda(p.price);
 const link=p.offerLink || "#";
 
-html += `
+html+=`
 <div class="card"
 onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
 
 <div class="img-wrap">
-<img
-src="${img}"
-loading="lazy"
+<img src="${img}" loading="lazy"
 onerror="this.src='https://via.placeholder.com/400?text=Produto'">
 </div>
 
 <div class="title">${nome}</div>
 <div class="price">R$ ${preco}</div>
 
-<button
-class="btn"
+<button class="btn"
 onclick="event.stopPropagation();window.open('${link}','_blank')">
 Comprar
 </button>
@@ -553,8 +543,7 @@ Comprar
 
 });
 
-html += "</div>";
-
+html+="</div>";
 box.className="";
 box.innerHTML=html;
 
@@ -563,8 +552,6 @@ box.innerHTML="Erro ao carregar produtos.";
 }
 
 }
-
-/* MODAL */
 
 function abrirModal(nome,img,preco,link){
 
@@ -583,8 +570,6 @@ function fecharModal(){
 document.getElementById("modalProduto").style.display="none";
 }
 
-/* BUSCA */
-
 function buscarProduto(){
 
 const termo=document.getElementById("buscar").value.trim();
@@ -601,41 +586,35 @@ document.getElementById("buscar").addEventListener("keydown",function(e){
 if(e.key==="Enter") buscarProduto();
 });
 
-/* HEADER SUAVE */
+/* HEADER */
 
-let ultimo=false;
-let ticking=false;
+let ativo=false;
+let rodando=false;
 
 function atualizarHeader(){
 
-const mini=window.scrollY>55;
+const mini=window.scrollY>70;
 
-if(mini!==ultimo){
+if(mini!==ativo){
 document.getElementById("topo").classList.toggle("mini",mini);
-ultimo=mini;
+ativo=mini;
 }
 
-ticking=false;
+rodando=false;
 }
 
 window.addEventListener("scroll",function(){
 
-if(!ticking){
+if(!rodando){
 requestAnimationFrame(atualizarHeader);
-ticking=true;
+rodando=true;
 }
 
 },{passive:true});
 
-/* FECHAR MODAL */
-
 document.getElementById("modalProduto").addEventListener("click",function(e){
-if(e.target.id==="modalProduto"){
-fecharModal();
-}
+if(e.target.id==="modalProduto") fecharModal();
 });
-
-/* START */
 
 carregarProdutos();
 </script>
