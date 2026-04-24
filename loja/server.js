@@ -43,7 +43,7 @@ return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signatu
 /* ============================
    CONSULTA
 ============================ */
-async function buscarProdutos(keyword, limit = 20){
+async function buscarProdutos(keyword, limit = 30){
 
 try{
 
@@ -83,36 +83,73 @@ data.data.productOfferV2 &&
 data.data.productOfferV2.nodes &&
 data.data.productOfferV2.nodes.length > 0
 ){
-return data;
+return data.data.productOfferV2.nodes;
 }
 
-return null;
+return [];
 
 }catch(e){
-return null;
+
+return [];
+
 }
 
 }
 
 /* ============================
-   FALLBACK
+   BUSCA VARIADA
 ============================ */
-async function buscarComFallback(lista){
+async function buscarVariados(){
 
-for(const termo of lista){
+const termos = [
 
-const r = await buscarProdutos(termo,20);
+"guia umbanda",
+"exu",
+"pomba gira",
+"preto velho",
+"caboclo",
+"orixa",
+"vela 7 dias",
+"banho descarrego",
+"ervas espirituais",
+"colar proteção"
 
-if(r){
-return r;
+];
+
+let todos = [];
+
+for(const termo of termos){
+
+const lista = await buscarProdutos(termo,3);
+
+todos = todos.concat(lista);
+
 }
 
+/* remove repetidos */
+const ids = new Set();
+
+todos = todos.filter(p=>{
+
+if(ids.has(p.itemId)){
+return false;
 }
+
+ids.add(p.itemId);
+return true;
+
+});
+
+/* embaralha */
+todos.sort(()=>Math.random()-0.5);
+
+/* maximo 30 */
+todos = todos.slice(0,30);
 
 return {
 data:{
 productOfferV2:{
-nodes:[]
+nodes:todos
 }
 }
 };
@@ -120,60 +157,61 @@ nodes:[]
 }
 
 /* ============================
-   HOME
+   HOME PRODUTOS VARIADOS
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
-const data = await buscarComFallback([
-"guia umbanda",
-"exu",
-"pomba gira",
-"vela 7 dias",
-"banho descarrego",
-"colar proteção"
-]);
+const data = await buscarVariados();
 
 res.json(data);
 
 });
 
 /* ============================
-   BUSCA INTELIGENTE BLINDADA
+   BUSCA INTELIGENTE
 ============================ */
 app.get("/buscar/:termo", async(req,res)=>{
 
 const termo = req.params.termo.toLowerCase().trim();
 
-const mapa = {
-
-exu:["exu","imagem exu","estatua exu"],
-vela:["vela 7 dias","vela espiritual","vela religiosa"],
-guia:["guia umbanda","guia colar proteção"],
-colar:["colar proteção","guia umbanda"],
-erva:["ervas espirituais","arruda guiné alecrim"],
-ervas:["ervas espirituais","arruda guiné alecrim"],
-banho:["banho descarrego","banho espiritual"],
-pomba:["pomba gira","imagem pomba gira"],
-preto:["preto velho","imagem preto velho"],
-caboclo:["caboclo","imagem caboclo"],
-orixa:["orixa","imagem orixa"],
-atabaque:["atabaque","tambor religioso"]
-
-};
-
-let lista = mapa[termo];
-
-if(!lista){
-lista = [
+const lista = [
 `${termo} umbanda`,
 `${termo} espiritual`,
 `${termo} religioso`
 ];
+
+let todos = [];
+
+for(const item of lista){
+
+const r = await buscarProdutos(item,10);
+
+todos = todos.concat(r);
+
 }
 
-const data = await buscarComFallback(lista);
+const ids = new Set();
 
-res.json(data);
+todos = todos.filter(p=>{
+
+if(ids.has(p.itemId)){
+return false;
+}
+
+ids.add(p.itemId);
+return true;
+
+});
+
+todos = todos.slice(0,30);
+
+res.json({
+data:{
+productOfferV2:{
+nodes:todos
+}
+}
+});
 
 });
 
