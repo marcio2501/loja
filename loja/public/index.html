@@ -24,7 +24,7 @@
 --texto:#222;
 --card:#ffffff;
 --radius:16px;
---shadow:0 6px 18px rgba(0,0,0,.08);
+--shadow:0 8px 20px rgba(0,0,0,.08);
 }
 
 *{
@@ -37,11 +37,11 @@ box-sizing:border-box;
 body{
 font-family:'Poppins',sans-serif;
 background:#f6c400;
-color:var(--texto);
+color:#222;
 overflow-x:hidden;
 }
 
-/* HEADER */
+/* HEADER APP */
 header{
 position:sticky;
 top:0;
@@ -52,14 +52,13 @@ calc(env(safe-area-inset-top) + 8px)
 10px
 10px
 10px;
-transition:.25s;
-box-shadow:0 4px 10px rgba(0,0,0,.05);
+box-shadow:0 2px 8px rgba(0,0,0,.04);
 }
 
-/* HEADER COMPACTO AO ROLAR */
+/* SEM DELAY */
 header.mini{
 padding:
-calc(env(safe-area-inset-top) + 5px)
+calc(env(safe-area-inset-top) + 6px)
 10px
 8px
 10px;
@@ -67,7 +66,6 @@ calc(env(safe-area-inset-top) + 5px)
 
 header.mini .logo{
 max-width:170px;
-margin:0;
 }
 
 header.mini .logo-link{
@@ -88,7 +86,6 @@ width:100%;
 max-width:430px;
 height:auto;
 display:block;
-transition:.25s;
 }
 
 /* BUSCA */
@@ -109,7 +106,6 @@ padding:0 14px;
 font-size:14px;
 font-family:'Poppins',sans-serif;
 box-shadow:var(--shadow);
-width:100%;
 }
 
 .buscar-btn{
@@ -152,6 +148,7 @@ padding:8px;
 box-shadow:var(--shadow);
 display:flex;
 flex-direction:column;
+cursor:pointer;
 }
 
 .img-wrap{
@@ -198,6 +195,77 @@ font-weight:700;
 background:linear-gradient(135deg,var(--amarelo),var(--amarelo2));
 color:#222;
 cursor:pointer;
+}
+
+/* MODAL PRODUTO */
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+display:none;
+z-index:9999;
+padding:14px;
+overflow:auto;
+}
+
+.modal-box{
+background:#fff;
+max-width:520px;
+margin:30px auto;
+border-radius:18px;
+padding:14px;
+box-shadow:var(--shadow);
+}
+
+.modal-img{
+width:100%;
+border-radius:14px;
+aspect-ratio:1/1;
+object-fit:cover;
+background:#f2f2f2;
+}
+
+.modal-title{
+margin-top:12px;
+font-size:18px;
+font-weight:700;
+line-height:1.35;
+}
+
+.modal-price{
+margin-top:8px;
+font-size:24px;
+font-weight:700;
+color:#b88900;
+}
+
+.modal-desc{
+margin-top:8px;
+font-size:14px;
+line-height:1.5;
+color:#555;
+}
+
+.modal-btn,
+.fechar-btn{
+width:100%;
+height:46px;
+border:none;
+border-radius:12px;
+font-size:15px;
+font-weight:700;
+margin-top:12px;
+cursor:pointer;
+}
+
+.modal-btn{
+background:linear-gradient(135deg,var(--amarelo),var(--amarelo2));
+color:#222;
+}
+
+.fechar-btn{
+background:#222;
+color:#fff;
 }
 
 /* TABLET */
@@ -291,7 +359,36 @@ Carregando produtos...
 </div>
 </main>
 
+<!-- MODAL -->
+<div class="modal" id="modalProduto">
+<div class="modal-box">
+
+<img id="mImg" class="modal-img">
+
+<div id="mTitulo" class="modal-title"></div>
+
+<div id="mPreco" class="modal-price"></div>
+
+<div id="mDesc" class="modal-desc">
+Produto selecionado da nossa vitrine oficial Shopee da Umbanda.
+</div>
+
+<button class="modal-btn" id="mComprar">
+Comprar
+</button>
+
+<button class="fechar-btn" onclick="fecharModal()">
+Fechar
+</button>
+
+</div>
+</div>
+
 <script>
+
+function moeda(v){
+return Number(v || 0).toFixed(2);
+}
 
 /* PRODUTOS */
 async function carregarProdutos(url="/produtos"){
@@ -315,15 +412,21 @@ let produtos = data.data.productOfferV2.nodes.slice(0,24);
 
 let html = '<div class="grid">';
 
-produtos.forEach(p=>{
+produtos.forEach((p,i)=>{
 
-const nome = p.productName || "Produto";
+const nome = (p.productName || "Produto").replace(/'/g,"");
 const img = p.imageUrl || "";
-const preco = Number(p.price || 0).toFixed(2);
+const preco = moeda(p.price);
 const link = p.offerLink || "#";
 
 html += `
-<div class="card">
+<div class="card"
+onclick="abrirModal(
+'${nome}',
+'${img}',
+'${preco}',
+'${link}'
+)">
 
 <div class="img-wrap">
 <img
@@ -334,13 +437,11 @@ onerror="this.src='https://via.placeholder.com/400?text=Produto'">
 
 <div class="title">${nome}</div>
 
-<div class="price">
-R$ ${preco}
-</div>
+<div class="price">R$ ${preco}</div>
 
 <button
 class="btn"
-onclick="window.open('${link}','_blank')">
+onclick="event.stopPropagation();window.open('${link}','_blank')">
 Comprar
 </button>
 
@@ -360,6 +461,25 @@ box.innerHTML = "Erro ao carregar produtos.";
 
 }
 
+}
+
+/* MODAL */
+function abrirModal(nome,img,preco,link){
+
+document.getElementById("mImg").src = img;
+document.getElementById("mTitulo").innerText = nome;
+document.getElementById("mPreco").innerText = "R$ " + preco;
+
+document.getElementById("mComprar").onclick = function(){
+window.open(link,"_blank");
+};
+
+document.getElementById("modalProduto").style.display="block";
+
+}
+
+function fecharModal(){
+document.getElementById("modalProduto").style.display="none";
 }
 
 /* BUSCA */
@@ -388,16 +508,25 @@ buscarProduto();
 
 });
 
-/* HEADER DIMINUI */
+/* HEADER APP */
 window.addEventListener("scroll",()=>{
 
-const topo =
-document.getElementById("topo");
+const topo = document.getElementById("topo");
 
 if(window.scrollY > 60){
 topo.classList.add("mini");
 }else{
 topo.classList.remove("mini");
+}
+
+});
+
+/* FECHAR MODAL FORA */
+document.getElementById("modalProduto")
+.addEventListener("click",function(e){
+
+if(e.target.id==="modalProduto"){
+fecharModal();
 }
 
 });
