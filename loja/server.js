@@ -14,156 +14,219 @@ const APP_SECRET = process.env.APP_SECRET;
 
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
-/* ==================================
-   FUNÇÃO CONSULTAR API SHOPEE
-================================== */
-async function buscarProdutos(keyword, limit = 20) {
-  try {
-    const query = `
-    {
-      productOfferV2(
-        keyword:"${keyword}"
-        limit:${limit}
-      ){
-        nodes{
-          itemId
-          productName
-          imageUrl
-          price
-          offerLink
-        }
-      }
-    }`;
+/* ===================================
+   ASSINATURA SHOPEE
+=================================== */
+function gerarAuth(payload) {
 
-    const payload = JSON.stringify({ query });
+const timestamp = Math.floor(Date.now() / 1000).toString();
 
-    const timestamp = Math.floor(Date.now() / 1000).toString();
+const factor =
+APP_ID +
+timestamp +
+payload +
+APP_SECRET;
 
-    const factor =
-      APP_ID +
-      timestamp +
-      payload +
-      APP_SECRET;
+const signature = crypto
+.createHash("sha256")
+.update(factor)
+.digest("hex");
 
-    const signature = crypto
-      .createHash("sha256")
-      .update(factor)
-      .digest("hex");
-
-    const auth =
-      `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signature}`;
-
-    const resposta = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": auth
-      },
-      body: payload
-    });
-
-    const data = await resposta.json();
-
-    return data;
-
-  } catch (erro) {
-    return { erro: erro.message };
-  }
+return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signature}`;
 }
 
-/* ==================================
-   HOME - MELHOR ESTRATÉGIA
-================================== */
-/* mistura termos populares para trazer
-   mais chance de ofertas aparecerem */
+/* ===================================
+   CONSULTA API
+=================================== */
+async function buscarProdutos(keyword, limit = 20) {
+
+try {
+
+const query = `
+{
+  productOfferV2(
+    keyword:"${keyword}"
+    limit:${limit}
+  ){
+    nodes{
+      itemId
+      productName
+      imageUrl
+      price
+      offerLink
+    }
+  }
+}`;
+
+const payload = JSON.stringify({ query });
+
+const resposta = await fetch(API_URL, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"Authorization": gerarAuth(payload)
+},
+body: payload
+});
+
+const data = await resposta.json();
+
+if (
+data &&
+data.data &&
+data.data.productOfferV2 &&
+data.data.productOfferV2.nodes &&
+data.data.productOfferV2.nodes.length > 0
+) {
+return data;
+}
+
+return null;
+
+} catch (erro) {
+return null;
+}
+
+}
+
+/* ===================================
+   SISTEMA ANTI-FALHA
+   testa várias keywords até achar
+=================================== */
+async function buscarComFallback(listaKeywords) {
+
+for (const termo of listaKeywords) {
+
+const resultado = await buscarProdutos(termo, 20);
+
+if (resultado) {
+console.log("ACHOU:", termo);
+return resultado;
+}
+
+}
+
+return {
+data: {
+productOfferV2: {
+nodes: []
+}
+}
+};
+
+}
+
+/* ===================================
+   HOME ANTI-FALHA
+=================================== */
 app.get("/produtos", async (req, res) => {
 
-  const data = await buscarProdutos(
-    "incenso vela cristal tarot guia colar imagem santo ervas banho espiritual umbanda candomble esoterico",
-    20
-  );
+const data = await buscarComFallback([
 
-  res.json(data);
+"incenso vela cristal tarot espiritual",
+"religioso catolico santo terço vela",
+"umbanda guia colar ervas banho",
+"tarot baralho cigano cristal",
+"esoterico pendulo runas amuleto"
+
+]);
+
+res.json(data);
 
 });
 
-/* ==================================
+/* ===================================
    UMBANDA
-================================== */
+=================================== */
 app.get("/produtos/umbanda", async (req, res) => {
 
-  const data = await buscarProdutos(
-    "umbanda guia colar exu pomba gira preto velho caboclo orixa",
-    20
-  );
+const data = await buscarComFallback([
 
-  res.json(data);
+"umbanda guia colar exu pomba gira",
+"caboclo preto velho orixa",
+"ervas umbanda banho descarrego"
 
-});
+]);
 
-/* ==================================
-   CANDOMBLE
-================================== */
-app.get("/produtos/candomble", async (req, res) => {
-
-  const data = await buscarProdutos(
-    "candomble orixa guia colar atabaque roupa branca",
-    20
-  );
-
-  res.json(data);
+res.json(data);
 
 });
 
-/* ==================================
-   ESPIRITISMO
-================================== */
-app.get("/produtos/espiritismo", async (req, res) => {
-
-  const data = await buscarProdutos(
-    "espiritismo espiritual livro mediunidade energia",
-    20
-  );
-
-  res.json(data);
-
-});
-
-/* ==================================
-   ESOTÉRICO
-================================== */
-app.get("/produtos/esoterico", async (req, res) => {
-
-  const data = await buscarProdutos(
-    "tarot runas pendulo radiestesia cristal amuleto",
-    20
-  );
-
-  res.json(data);
-
-});
-
-/* ==================================
+/* ===================================
    INCENSOS
-================================== */
+=================================== */
 app.get("/produtos/incensos", async (req, res) => {
 
-  const data = await buscarProdutos(
-    "incenso defumador incensario mirra",
-    20
-  );
+const data = await buscarComFallback([
 
-  res.json(data);
+"incenso",
+"defumador",
+"incensario mirra"
+
+]);
+
+res.json(data);
 
 });
 
-/* ==================================
+/* ===================================
+   TAROT
+=================================== */
+app.get("/produtos/tarot", async (req, res) => {
+
+const data = await buscarComFallback([
+
+"tarot",
+"baralho cigano",
+"runas pendulo"
+
+]);
+
+res.json(data);
+
+});
+
+/* ===================================
+   CRISTAIS
+=================================== */
+app.get("/produtos/cristais", async (req, res) => {
+
+const data = await buscarComFallback([
+
+"cristal",
+"ametista quartzo rosa",
+"pedra chakra energia"
+
+]);
+
+res.json(data);
+
+});
+
+/* ===================================
+   CATOLICO
+=================================== */
+app.get("/produtos/catolico", async (req, res) => {
+
+const data = await buscarComFallback([
+
+"terço crucifixo santo",
+"nossa senhora sao jorge",
+"biblia escapulario"
+
+]);
+
+res.json(data);
+
+});
+
+/* ===================================
    HOME HTML
-================================== */
+=================================== */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/index.html"));
+res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
 app.listen(10000, () => {
-  console.log("Servidor ON");
+console.log("Servidor ON");
 });
