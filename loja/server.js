@@ -19,6 +19,13 @@ const APP_SECRET = process.env.APP_SECRET;
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 /* ============================
+   CACHE ULTRA RÁPIDO
+============================ */
+let cacheHome = null;
+let cacheTempo = 0;
+const CACHE_MS = 10000; // 10 segundos
+
+/* ============================
    ASSINATURA
 ============================ */
 function gerarAuth(payload){
@@ -96,62 +103,59 @@ return [];
 }
 
 /* ============================
-   VITRINE NICHO
-   até 50 produtos
+   HOME DINÂMICA NICHO
 ============================ */
-async function buscarVitrineNicho(){
+async function buscarMaisProcurados(){
+
+/* cache 10 segundos */
+if(
+cacheHome &&
+(Date.now() - cacheTempo < CACHE_MS)
+){
+return cacheHome;
+}
 
 const termos = [
 
 "guia umbanda",
 "exu",
 "pomba gira",
-"preto velho",
-"caboclo",
-"orixa",
-"imagem religiosa umbanda",
 "vela 7 dias",
-"vela espiritual",
 "banho descarrego",
-"banho espiritual",
-"ervas espirituais",
-"arruda",
-"guiné",
-"alecrim",
 "colar proteção",
-"amuleto proteção",
 "incenso",
-"defumador",
-"incensario",
+"imagem religiosa",
+"preto velho",
+"orixa",
+"caboclo",
+"ervas espirituais",
+"amuleto proteção",
+"tarot",
+"baralho cigano",
 "cristal",
 "ametista",
 "quartzo rosa",
-"pedra chakra",
-"tarot",
-"baralho cigano",
-"pendulo",
-"radiestesia",
-"atabaque",
-"tambor religioso"
+"defumador",
+"atabaque"
 
 ];
 
 /* embaralha termos */
 termos.sort(()=>Math.random()-0.5);
 
-/* pega 15 termos por rodada */
-const selecionados = termos.slice(0,15);
+/* usa 12 termos por rodada */
+const escolhidos = termos.slice(0,12);
 
 /* busca paralelo */
 const promessas =
-selecionados.map(t=>buscarProdutos(t,8));
+escolhidos.map(t=>buscarProdutos(t,8));
 
 const resultados =
 await Promise.all(promessas);
 
 let todos = [];
 
-/* junta tudo */
+/* junta */
 resultados.forEach(lista=>{
 todos = todos.concat(lista);
 });
@@ -173,16 +177,22 @@ return true;
 /* embaralha produtos */
 todos.sort(()=>Math.random()-0.5);
 
-/* máximo 50 */
+/* maximo 50 */
 todos = todos.slice(0,50);
 
-return {
+const resposta = {
 data:{
 productOfferV2:{
 nodes:todos
 }
 }
 };
+
+/* salva cache */
+cacheHome = resposta;
+cacheTempo = Date.now();
+
+return resposta;
 
 }
 
@@ -191,7 +201,7 @@ nodes:todos
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
-const data = await buscarVitrineNicho();
+const data = await buscarMaisProcurados();
 
 res.json(data);
 
@@ -242,7 +252,7 @@ return true;
 
 });
 
-/* máximo 50 */
+/* maximo 50 */
 todos = todos.slice(0,50);
 
 res.json({
