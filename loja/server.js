@@ -41,9 +41,9 @@ return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signatu
 }
 
 /* ============================
-   CONSULTA
+   CONSULTA API
 ============================ */
-async function buscarProdutos(keyword, limit = 30){
+async function buscarProdutos(keyword, limit = 50){
 
 try{
 
@@ -97,9 +97,9 @@ return [];
 }
 
 /* ============================
-   BUSCA VARIADA
+   MAIS PROCURADOS UMBANDA
 ============================ */
-async function buscarVariados(){
+async function buscarMaisProcurados(){
 
 const termos = [
 
@@ -112,15 +112,23 @@ const termos = [
 "vela 7 dias",
 "banho descarrego",
 "ervas espirituais",
-"colar proteção"
+"colar proteção",
+"imagem religiosa",
+"atabaque",
+"incenso",
+"defumador",
+"arruda",
+"quartzo rosa",
+"ametista"
 
 ];
 
 let todos = [];
 
+/* pega produtos populares */
 for(const termo of termos){
 
-const lista = await buscarProdutos(termo,3);
+const lista = await buscarProdutos(termo,5);
 
 todos = todos.concat(lista);
 
@@ -140,11 +148,11 @@ return true;
 
 });
 
-/* embaralha */
-todos.sort(()=>Math.random()-0.5);
+/* mantém ordem natural da Shopee
+   (mais relevantes primeiro) */
 
-/* maximo 30 */
-todos = todos.slice(0,30);
+/* máximo 50 */
+todos = todos.slice(0,50);
 
 return {
 data:{
@@ -157,11 +165,11 @@ nodes:todos
 }
 
 /* ============================
-   HOME PRODUTOS VARIADOS
+   HOME - MAIS PROCURADOS
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
-const data = await buscarVariados();
+const data = await buscarMaisProcurados();
 
 res.json(data);
 
@@ -175,21 +183,26 @@ app.get("/buscar/:termo", async(req,res)=>{
 const termo = req.params.termo.toLowerCase().trim();
 
 const lista = [
+
 `${termo} umbanda`,
 `${termo} espiritual`,
-`${termo} religioso`
+`${termo} religioso`,
+`${termo} esoterico`,
+`${termo} candomble`
+
 ];
 
 let todos = [];
 
 for(const item of lista){
 
-const r = await buscarProdutos(item,10);
+const r = await buscarProdutos(item,15);
 
 todos = todos.concat(r);
 
 }
 
+/* remove repetidos */
 const ids = new Set();
 
 todos = todos.filter(p=>{
@@ -203,7 +216,8 @@ return true;
 
 });
 
-todos = todos.slice(0,30);
+/* maximo 50 */
+todos = todos.slice(0,50);
 
 res.json({
 data:{
