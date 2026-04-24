@@ -36,6 +36,7 @@ box-sizing:border-box;
 
 html{
 -webkit-text-size-adjust:100%;
+scroll-behavior:smooth;
 }
 
 body{
@@ -59,7 +60,6 @@ calc(env(safe-area-inset-top) + 8px)
 box-shadow:0 2px 8px rgba(0,0,0,.04);
 }
 
-/* SUAVE APP */
 header.mini{
 padding:
 calc(env(safe-area-inset-top) + 6px)
@@ -277,6 +277,46 @@ background:#222;
 color:#fff;
 }
 
+/* RODAPÉ */
+footer{
+margin-top:24px;
+padding:26px 16px 34px;
+background:rgba(255,255,255,.92);
+border-top-left-radius:22px;
+border-top-right-radius:22px;
+box-shadow:0 -4px 16px rgba(0,0,0,.06);
+}
+
+.footer-box{
+max-width:1000px;
+margin:auto;
+text-align:center;
+}
+
+.footer-title{
+font-size:18px;
+font-weight:700;
+margin-bottom:14px;
+color:#222;
+}
+
+.footer-text{
+font-size:14px;
+line-height:1.8;
+color:#444;
+}
+
+.footer-text p{
+margin-bottom:14px;
+}
+
+.footer-copy{
+margin-top:18px;
+font-size:13px;
+font-weight:600;
+color:#666;
+}
+
 /* TABLET */
 @media(min-width:768px){
 
@@ -300,6 +340,18 @@ height:40px;
 
 .price{
 font-size:20px;
+}
+
+footer{
+padding:34px 24px 40px;
+}
+
+.footer-title{
+font-size:22px;
+}
+
+.footer-text{
+font-size:15px;
 }
 
 }
@@ -363,9 +415,11 @@ Buscar
 </header>
 
 <main class="container">
+
 <div id="produtos" class="status">
 Carregando produtos...
 </div>
+
 </main>
 
 <!-- MODAL -->
@@ -392,6 +446,51 @@ Fechar
 
 </div>
 </div>
+
+<!-- RODAPÉ -->
+<footer>
+
+<div class="footer-box">
+
+<div class="footer-title">
+Quem Somos Nós?
+</div>
+
+<div class="footer-text">
+
+<p>
+Shopee da Umbanda é uma vitrine digital criada para conectar você aos melhores produtos de Umbanda, Candomblé, espiritualidade e artigos esotéricos disponíveis na Shopee.
+</p>
+
+<p>
+Aqui você encontra guias, velas, ervas, imagens religiosas, banhos espirituais, incensos, cristais, amuletos e diversos itens selecionados para fortalecer sua fé, energia e proteção.
+</p>
+
+<p>
+Nosso objetivo é facilitar sua busca, reunindo em um só lugar produtos variados para quem vive a espiritualidade com respeito e dedicação.
+</p>
+
+<p>
+Importante: todos os pedidos, pagamentos, envios, prazos de entrega, trocas, garantias e atendimento pós-venda são de total responsabilidade da Shopee e dos vendedores parceiros anunciados na plataforma.
+</p>
+
+<p>
+A Shopee da Umbanda atua exclusivamente como ponte de divulgação, indicação e direcionamento para ofertas oficiais da Shopee.
+</p>
+
+<p>
+Axé, luz e boas compras para você.
+</p>
+
+</div>
+
+<div class="footer-copy">
+© 2026 Shopee da Umbanda
+</div>
+
+</div>
+
+</footer>
 
 <script>
 
@@ -423,9 +522,7 @@ let html = '<div class="grid">';
 
 produtos.forEach(p=>{
 
-const nome = (p.productName || "Produto")
-.replace(/'/g,"");
-
+const nome = (p.productName || "Produto").replace(/'/g,"");
 const img = p.imageUrl || "";
 const preco = moeda(p.price);
 const link = p.offerLink || "#";
@@ -499,9 +596,7 @@ carregarProdutos("/produtos");
 return;
 }
 
-carregarProdutos(
-"/buscar/" + encodeURIComponent(termo)
-);
+carregarProdutos("/buscar/" + encodeURIComponent(termo));
 
 }
 
@@ -514,7 +609,7 @@ buscarProduto();
 
 });
 
-/* HEADER SUAVE */
+/* HEADER MINI */
 let ultimoEstado = false;
 
 window.addEventListener("scroll",()=>{
@@ -533,7 +628,7 @@ ultimoEstado = mini;
 
 },{passive:true});
 
-/* FECHAR MODAL FORA */
+/* FECHAR MODAL */
 document.getElementById("modalProduto")
 .addEventListener("click",function(e){
 
