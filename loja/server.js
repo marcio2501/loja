@@ -1,3 +1,7 @@
+// ============================
+// server.js
+// ============================
+
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
@@ -14,12 +18,12 @@ const APP_SECRET = process.env.APP_SECRET;
 
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
-/* ===================================
-   ASSINATURA API SHOPEE
-=================================== */
-function gerarAuth(payload) {
+/* ============================
+   ASSINATURA
+============================ */
+function gerarAuth(payload){
 
-const timestamp = Math.floor(Date.now() / 1000).toString();
+const timestamp = Math.floor(Date.now()/1000).toString();
 
 const factor =
 APP_ID +
@@ -36,12 +40,12 @@ return `SHA256 Credential=${APP_ID}, Timestamp=${timestamp}, Signature=${signatu
 
 }
 
-/* ===================================
-   CONSULTA API
-=================================== */
-async function buscarProdutos(keyword, limit = 20) {
+/* ============================
+   CONSULTA
+============================ */
+async function buscarProdutos(keyword, limit = 20){
 
-try {
+try{
 
 const query = `
 {
@@ -59,206 +63,127 @@ const query = `
   }
 }`;
 
-const payload = JSON.stringify({ query });
+const payload = JSON.stringify({query});
 
-const resposta = await fetch(API_URL, {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-"Authorization": gerarAuth(payload)
+const resposta = await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":gerarAuth(payload)
 },
-body: payload
+body:payload
 });
 
 const data = await resposta.json();
 
-if (
+if(
 data &&
 data.data &&
 data.data.productOfferV2 &&
 data.data.productOfferV2.nodes &&
 data.data.productOfferV2.nodes.length > 0
-) {
+){
 return data;
 }
 
 return null;
 
-} catch (erro) {
-
+}catch(e){
 return null;
-
 }
 
 }
 
-/* ===================================
-   SISTEMA ANTI-FALHA
-=================================== */
-async function buscarComFallback(listaKeywords) {
+/* ============================
+   FALLBACK
+============================ */
+async function buscarComFallback(lista){
 
-for (const termo of listaKeywords) {
+for(const termo of lista){
 
-const resultado = await buscarProdutos(termo, 20);
+const r = await buscarProdutos(termo,20);
 
-if (resultado) {
-
-console.log("ACHOU:", termo);
-
-return resultado;
-
+if(r){
+return r;
 }
 
 }
 
 return {
-data: {
-productOfferV2: {
-nodes: []
+data:{
+productOfferV2:{
+nodes:[]
 }
 }
 };
 
 }
 
-/* ===================================
-   HOME UMBANDA PROFISSIONAL
-=================================== */
-app.get("/produtos", async (req, res) => {
+/* ============================
+   HOME
+============================ */
+app.get("/produtos", async(req,res)=>{
 
 const data = await buscarComFallback([
-
 "guia umbanda",
 "exu",
 "pomba gira",
-"preto velho",
-"caboclo",
-"orixa",
-"banho descarrego",
-"ervas espirituais",
 "vela 7 dias",
-"imagem religiosa",
-"atabaque",
+"banho descarrego",
 "colar proteção"
-
 ]);
 
 res.json(data);
 
 });
 
-/* ===================================
-   GUIAS E COLARES
-=================================== */
-app.get("/produtos/guias", async (req, res) => {
+/* ============================
+   BUSCA INTELIGENTE BLINDADA
+============================ */
+app.get("/buscar/:termo", async(req,res)=>{
 
-const data = await buscarComFallback([
+const termo = req.params.termo.toLowerCase().trim();
 
-"guia umbanda",
-"colar proteção",
-"guia religiosa"
+const mapa = {
 
-]);
+exu:["exu","imagem exu","estatua exu"],
+vela:["vela 7 dias","vela espiritual","vela religiosa"],
+guia:["guia umbanda","guia colar proteção"],
+colar:["colar proteção","guia umbanda"],
+erva:["ervas espirituais","arruda guiné alecrim"],
+ervas:["ervas espirituais","arruda guiné alecrim"],
+banho:["banho descarrego","banho espiritual"],
+pomba:["pomba gira","imagem pomba gira"],
+preto:["preto velho","imagem preto velho"],
+caboclo:["caboclo","imagem caboclo"],
+orixa:["orixa","imagem orixa"],
+atabaque:["atabaque","tambor religioso"]
 
-res.json(data);
+};
 
-});
+let lista = mapa[termo];
 
-/* ===================================
-   EXU E POMBA GIRA
-=================================== */
-app.get("/produtos/exu", async (req, res) => {
+if(!lista){
+lista = [
+`${termo} umbanda`,
+`${termo} espiritual`,
+`${termo} religioso`
+];
+}
 
-const data = await buscarComFallback([
-
-"exu",
-"pomba gira",
-"imagem exu"
-
-]);
-
-res.json(data);
-
-});
-
-/* ===================================
-   PRETO VELHO E CABOCLO
-=================================== */
-app.get("/produtos/entidades", async (req, res) => {
-
-const data = await buscarComFallback([
-
-"preto velho",
-"caboclo",
-"imagem religiosa umbanda"
-
-]);
+const data = await buscarComFallback(lista);
 
 res.json(data);
 
 });
 
-/* ===================================
-   BANHOS E ERVAS
-=================================== */
-app.get("/produtos/banhos", async (req, res) => {
-
-const data = await buscarComFallback([
-
-"banho descarrego",
-"ervas espirituais",
-"arruda guiné alecrim"
-
-]);
-
-res.json(data);
-
-});
-
-/* ===================================
-   VELAS
-=================================== */
-app.get("/produtos/velas", async (req, res) => {
-
-const data = await buscarComFallback([
-
-"vela 7 dias",
-"vela espiritual",
-"vela religiosa"
-
-]);
-
-res.json(data);
-
-});
-
-/* ===================================
-   ATABAQUE
-=================================== */
-app.get("/produtos/atabaque", async (req, res) => {
-
-const data = await buscarComFallback([
-
-"atabaque",
-"tambor religioso"
-
-]);
-
-res.json(data);
-
-});
-
-/* ===================================
+/* ============================
    HOME HTML
-=================================== */
-app.get("/", (req, res) => {
-
-res.sendFile(path.join(__dirname, "public/index.html"));
-
+============================ */
+app.get("/",(req,res)=>{
+res.sendFile(path.join(__dirname,"public/index.html"));
 });
 
-app.listen(10000, () => {
-
+app.listen(10000,()=>{
 console.log("Servidor ON");
-
 });
