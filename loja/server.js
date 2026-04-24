@@ -14,15 +14,16 @@ const APP_SECRET = process.env.APP_SECRET;
 
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
-app.get("/produtos", async (req, res) => {
-
-try {
+/* =========================
+   FUNÇÃO CONSULTAR SHOPEE
+========================= */
+async function buscarProdutos(keyword, limit = 100) {
 
 const query = `
 {
   productOfferV2(
-    keyword:"umbanda candomble quimbanda esoterico espiritual religioso tarot baralho cigano pedras cristais incensos velas imagens catolicas santos orixas exu pomba gira preto velho caboclo guia colar pulseira proteção banho descarrego ervas arruda guiné alecrim espada de são jorge cachimbo atabaque tambor roupas brancas saia cigana manto tunica toalha altar firmeza oração espiritismo kardecista reiki radiestesia pendulo runas mandala amuleto talismã medalha crucifixo terço escapulario biblia sagrada anjos arcanjos nossa senhora são jorge são benedito santa sara kali vela sete dias vela aromatica defumador resina mirra benjoim copal sandalwood incensário japamala yoga meditação chakras cura energética"
-    limit:500
+    keyword:"${keyword}"
+    limit:${limit}
   ){
     nodes{
       itemId
@@ -57,20 +58,120 @@ headers: {
 body: payload
 });
 
-const data = await resposta.json();
+return await resposta.json();
+}
+
+/* =========================
+   TODA LOJA GERAL
+========================= */
+app.get("/produtos", async (req, res) => {
+try {
+
+const data = await buscarProdutos(
+"umbanda candomble quimbanda esoterico tarot catolico cristais incensos velas espiritual",
+500
+);
 
 res.json(data);
 
 } catch (erro) {
-
-res.status(500).json({
-erro: erro.message
-});
-
+res.status(500).json({ erro: erro.message });
 }
-
 });
 
+/* =========================
+   UMBANDA
+========================= */
+app.get("/produtos/umbanda", async (req, res) => {
+try {
+
+const data = await buscarProdutos(
+"umbanda candomble quimbanda exu pomba gira preto velho caboclo orixa guia colar atabaque roupa branca ervas",
+300
+);
+
+res.json(data);
+
+} catch (erro) {
+res.status(500).json({ erro: erro.message });
+}
+});
+
+/* =========================
+   INCENSOS
+========================= */
+app.get("/produtos/incensos", async (req, res) => {
+try {
+
+const data = await buscarProdutos(
+"incenso defumador mirra benjoim copal sandalwood resina incensario aromaterapia",
+300
+);
+
+res.json(data);
+
+} catch (erro) {
+res.status(500).json({ erro: erro.message });
+}
+});
+
+/* =========================
+   TAROT
+========================= */
+app.get("/produtos/tarot", async (req, res) => {
+try {
+
+const data = await buscarProdutos(
+"tarot baralho cigano cartas oracle runas pendulo radiestesia toalha tarot",
+300
+);
+
+res.json(data);
+
+} catch (erro) {
+res.status(500).json({ erro: erro.message });
+}
+});
+
+/* =========================
+   CATOLICO
+========================= */
+app.get("/produtos/catolico", async (req, res) => {
+try {
+
+const data = await buscarProdutos(
+"catolico santo nossa senhora sao jorge terço crucifixo escapulario medalha biblia anjo",
+300
+);
+
+res.json(data);
+
+} catch (erro) {
+res.status(500).json({ erro: erro.message });
+}
+});
+
+/* =========================
+   CRISTAIS
+========================= */
+app.get("/produtos/cristais", async (req, res) => {
+try {
+
+const data = await buscarProdutos(
+"cristais pedras ametista quartzo rosa citrino obsidiana turmalina selenita energia chakra",
+300
+);
+
+res.json(data);
+
+} catch (erro) {
+res.status(500).json({ erro: erro.message });
+}
+});
+
+/* =========================
+   HOME
+========================= */
 app.get("/", (req, res) => {
 res.sendFile(path.join(__dirname, "public/index.html"));
 });
