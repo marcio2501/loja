@@ -13,12 +13,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <link rel="manifest" href="manifest.json">
-
 <link rel="apple-touch-icon" href="logo192.png">
 <link rel="icon" type="image/png" href="logo.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -107,6 +106,7 @@ padding:0 14px;
 font-size:14px;
 background:#fff;
 box-shadow:var(--shadow);
+font-family:'Poppins',sans-serif;
 }
 
 .buscar-btn{
@@ -118,6 +118,7 @@ cursor:pointer;
 background:linear-gradient(135deg,var(--gold),var(--gold2));
 color:var(--dark);
 box-shadow:var(--shadow);
+font-family:'Poppins',sans-serif;
 }
 
 header.mini .brand-row{
@@ -161,6 +162,11 @@ box-shadow:var(--shadow);
 display:flex;
 flex-direction:column;
 cursor:pointer;
+transition:.15s ease;
+}
+
+.card:active{
+transform:scale(.985);
 }
 
 .img-wrap{
@@ -206,6 +212,7 @@ font-size:13px;
 font-weight:700;
 cursor:pointer;
 background:linear-gradient(135deg,var(--gold),var(--gold2));
+font-family:'Poppins',sans-serif;
 }
 
 /* MODAL */
@@ -239,6 +246,7 @@ border-radius:14px;
 margin-top:12px;
 font-size:18px;
 font-weight:700;
+line-height:1.4;
 }
 
 .modal-price{
@@ -248,7 +256,8 @@ font-weight:700;
 color:var(--gold);
 }
 
-.modal-btn,.fechar-btn{
+.modal-btn,
+.fechar-btn{
 width:100%;
 height:46px;
 border:none;
@@ -256,6 +265,7 @@ border-radius:12px;
 margin-top:12px;
 font-weight:700;
 cursor:pointer;
+font-family:'Poppins',sans-serif;
 }
 
 .modal-btn{
@@ -310,6 +320,12 @@ border-radius:22px;
 padding:22px;
 box-shadow:0 20px 40px rgba(0,0,0,.18);
 text-align:center;
+animation:showPop .25s ease;
+}
+
+@keyframes showPop{
+from{transform:translateY(20px);opacity:0}
+to{transform:translateY(0);opacity:1}
 }
 
 .pwa-logo{
@@ -324,7 +340,6 @@ display:block;
 font-size:22px;
 font-weight:700;
 margin-bottom:8px;
-color:var(--dark);
 }
 
 .pwa-text{
@@ -352,6 +367,7 @@ border-radius:14px;
 font-weight:700;
 cursor:pointer;
 margin-top:8px;
+font-family:'Poppins',sans-serif;
 }
 
 .pwa-btn{
@@ -405,7 +421,7 @@ alt="Axé Shop">
 </div>
 
 <div class="top-search">
-<input type="search" id="buscar" class="busca-input" placeholder="Buscar vela, guia, erva...">
+<input type="search" id="buscar" class="busca-input" placeholder="Buscar vela, guia, erva..." enterkeyhint="search">
 <button class="buscar-btn" onclick="buscarProduto()">Buscar</button>
 </div>
 
@@ -431,30 +447,19 @@ alt="Axé Shop">
 </div>
 </div>
 
-<!-- PWA POPUP -->
+<!-- POPUP PWA -->
 <div id="pwaPopup">
-
 <div class="pwa-box">
 
 <img src="logo192.png" class="pwa-logo">
 
-<div class="pwa-title" id="pwaTitulo">
-Instalar Axé Shop
-</div>
-
-<div class="pwa-text" id="pwaTexto">
-Tenha acesso rápido como aplicativo.
-</div>
+<div class="pwa-title" id="pwaTitulo">Instalar Axé Shop</div>
+<div class="pwa-text" id="pwaTexto">Tenha acesso rápido como aplicativo.</div>
 
 <div class="pwa-steps" id="pwaSteps"></div>
 
-<button class="pwa-btn" id="pwaBtn">
-Instalar
-</button>
-
-<button class="pwa-close" onclick="fecharPWA()">
-Agora não
-</button>
+<button class="pwa-btn" id="pwaBtn">Instalar</button>
+<button class="pwa-close" onclick="fecharPWA()">Agora não</button>
 
 </div>
 </div>
@@ -473,7 +478,7 @@ Agora não
 
 <script>
 function moeda(v){
-return Number(v||0).toFixed(2);
+return Number(v || 0).toFixed(2);
 }
 
 /* PRODUTOS */
@@ -490,16 +495,21 @@ try{
 const r=await fetch(url,{cache:"no-store"});
 const data=await r.json();
 
+if(!data?.data?.productOfferV2?.nodes){
+box.innerHTML="Nenhum produto encontrado.";
+return;
+}
+
 let produtos=data.data.productOfferV2.nodes.slice(0,48);
 
 let html='<div class="grid">';
 
 produtos.forEach(p=>{
 
-const nome=(p.productName||"Produto").replace(/'/g,"");
-const img=p.imageUrl||"";
+const nome=(p.productName || "Produto").replace(/'/g,"");
+const img=p.imageUrl || "";
 const preco=moeda(p.price);
-const link=p.offerLink||"#";
+const link=p.offerLink || "#";
 
 html+=`
 <div class="card"
@@ -522,14 +532,18 @@ Comprar
 
 });
 
-html+="</div>";
+html+='</div>';
+
 box.className="";
 box.innerHTML=html;
 
 }catch(e){
 box.innerHTML="Erro ao carregar produtos.";
 }
+
 }
+
+/* BUSCA */
 
 function buscarProduto(){
 
@@ -540,10 +554,11 @@ carregarProdutos("/produtos");
 return;
 }
 
-carregarProdutos("/buscar/"+encodeURIComponent(termo));
+carregarProdutos("/buscar/" + encodeURIComponent(termo));
+
 }
 
-document.getElementById("buscar").addEventListener("keydown",e=>{
+document.getElementById("buscar").addEventListener("keydown",function(e){
 if(e.key==="Enter") buscarProduto();
 });
 
@@ -551,41 +566,42 @@ if(e.key==="Enter") buscarProduto();
 
 function abrirModal(nome,img,preco,link){
 
-mImg.src=img;
-mTitulo.innerText=nome;
-mPreco.innerText="R$ "+preco;
+document.getElementById("mImg").src=img;
+document.getElementById("mTitulo").innerText=nome;
+document.getElementById("mPreco").innerText="R$ " + preco;
 
-mComprar.onclick=()=>window.open(link,"_blank");
+document.getElementById("mComprar").onclick=()=>{
+window.open(link,"_blank");
+};
 
-modalProduto.style.display="block";
+document.getElementById("modalProduto").style.display="block";
+
 }
 
 function fecharModal(){
-modalProduto.style.display="none";
+document.getElementById("modalProduto").style.display="none";
 }
 
-modalProduto.onclick=e=>{
+document.getElementById("modalProduto").addEventListener("click",function(e){
 if(e.target.id==="modalProduto") fecharModal();
-};
+});
 
-/* HEADER */
+/* HEADER MINI */
 
 let ativo=false;
 
-window.addEventListener("scroll",()=>{
+window.addEventListener("scroll",function(){
 
-const mini=scrollY>70;
+const mini=window.scrollY>70;
 
 if(mini!==ativo){
-topo.classList.toggle("mini",mini);
+document.getElementById("topo").classList.toggle("mini",mini);
 ativo=mini;
 }
 
 },{passive:true});
 
-/* ==========================
-PWA
-========================== */
+/* PWA */
 
 const ua=navigator.userAgent.toLowerCase();
 
@@ -611,18 +627,23 @@ if(window.matchMedia('(display-mode: standalone)').matches) return;
 const popup=document.getElementById("pwaPopup");
 popup.style.display="flex";
 
+const titulo=document.getElementById("pwaTitulo");
+const texto=document.getElementById("pwaTexto");
+const steps=document.getElementById("pwaSteps");
+const btn=document.getElementById("pwaBtn");
+
 if(isInApp()){
 
-pwaTitulo.innerText="ABRIR NO NAVEGADOR";
-pwaTexto.innerText="Você está dentro do Instagram/Facebook.";
-pwaSteps.innerHTML=`
-1. Toque em ⋮ <br>
-2. Abrir no navegador <br>
+titulo.innerText="Abrir no Navegador";
+texto.innerText="Você está no Instagram ou Facebook.";
+steps.innerHTML=`
+1. Toque em ⋮<br>
+2. Abrir no navegador<br>
 3. Depois instale o app
 `;
 
-pwaBtn.innerText="Copiar Link";
-pwaBtn.onclick=()=>{
+btn.innerText="Copiar Link";
+btn.onclick=()=>{
 navigator.clipboard.writeText(location.href);
 alert("Link copiado!");
 };
@@ -632,53 +653,57 @@ return;
 
 if(isIOS()){
 
-pwaTitulo.innerText="INSTALAR NO IPHONE";
-pwaTexto.innerText="Siga os passos abaixo:";
-pwaSteps.innerHTML=`
+titulo.innerText="Instalar no iPhone";
+texto.innerText="Siga os passos:";
+steps.innerHTML=`
 1. Compartilhar ⤴<br>
 2. Adicionar à Tela Inicial<br>
 3. Confirmar
 `;
 
-pwaBtn.innerText="Entendi";
-pwaBtn.onclick=fecharPWA;
+btn.innerText="Entendi";
+btn.onclick=fecharPWA;
 
 return;
 }
 
 if(deferredPrompt){
 
-pwaTitulo.innerText="INSTALAR APLICATIVO";
-pwaTexto.innerText="Instale Axé Shop agora.";
-pwaSteps.innerHTML=`
-✔ Abre como app<br>
-✔ Mais rápido<br>
-✔ Acesso fácil
+titulo.innerText="Instalar Aplicativo";
+texto.innerText="Instale Axé Shop agora.";
+steps.innerHTML=`
+✔ Acesso rápido<br>
+✔ Funciona como app<br>
+✔ Mais leve
 `;
 
-pwaBtn.innerText="Instalar Agora";
-pwaBtn.onclick=async()=>{
+btn.innerText="Instalar Agora";
+
+btn.onclick=async()=>{
+
 deferredPrompt.prompt();
 await deferredPrompt.userChoice;
 fecharPWA();
+
 };
 
 return;
 }
 
-pwaTitulo.innerText="INSTALAR";
-pwaTexto.innerText="Use menu do navegador.";
-pwaSteps.innerHTML=`
+titulo.innerText="Instalar";
+texto.innerText="Use o menu do navegador.";
+steps.innerHTML=`
 Chrome / Edge:<br>
 ⋮ > Instalar aplicativo
 `;
 
-pwaBtn.innerText="Entendi";
-pwaBtn.onclick=fecharPWA;
+btn.innerText="Entendi";
+btn.onclick=fecharPWA;
+
 }
 
 function fecharPWA(){
-pwaPopup.style.display="none";
+document.getElementById("pwaPopup").style.display="none";
 }
 
 setTimeout(abrirPWA,2200);
