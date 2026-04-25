@@ -20,10 +20,11 @@ const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 /* ============================
    CACHE HOME
-   sempre renova ao atualizar
 ============================ */
 let cacheHome = null;
 let cacheTempo = 0;
+
+/* cache curto */
 const CACHE_MS = 1500;
 
 /* ============================
@@ -31,7 +32,7 @@ const CACHE_MS = 1500;
 ============================ */
 function gerarAuth(payload){
 
-const timestamp = Math.floor(Date.now()/1000).toString();
+const timestamp = Math.floor(Date.now() / 1000).toString();
 
 const factor =
 APP_ID +
@@ -55,10 +56,16 @@ async function buscarProdutos(keyword, limit = 12){
 
 try{
 
+const termoSeguro =
+String(keyword || "")
+.replace(/"/g,"")
+.replace(/\n/g," ")
+.replace(/\r/g," ");
+
 const query = `
 {
   productOfferV2(
-    keyword:"${keyword}"
+    keyword:"${termoSeguro}"
     limit:${limit}
   ){
     nodes{
@@ -69,9 +76,10 @@ const query = `
       offerLink
     }
   }
-}`;
+}
+`;
 
-const payload = JSON.stringify({query});
+const payload = JSON.stringify({ query });
 
 const resposta = await fetch(API_URL,{
 method:"POST",
@@ -88,7 +96,7 @@ if(
 data &&
 data.data &&
 data.data.productOfferV2 &&
-data.data.productOfferV2.nodes
+Array.isArray(data.data.productOfferV2.nodes)
 ){
 return data.data.productOfferV2.nodes;
 }
@@ -148,9 +156,13 @@ const palavras = [
 
 return lista.filter(p=>{
 
-const nome = (p.productName || "").toLowerCase();
+const nome = String(
+p.productName || ""
+).toLowerCase();
 
-return palavras.some(t => nome.includes(t));
+return palavras.some(t =>
+nome.includes(t)
+);
 
 });
 
@@ -165,11 +177,16 @@ const ids = new Set();
 
 return lista.filter(p=>{
 
-if(ids.has(p.itemId)){
+const id = String(p.itemId || "");
+
+if(!id) return false;
+
+if(ids.has(id)){
 return false;
 }
 
-ids.add(p.itemId);
+ids.add(id);
+
 return true;
 
 });
@@ -181,16 +198,31 @@ return true;
 ============================ */
 function embaralhar(lista){
 
-for(let i = lista.length - 1; i > 0; i--){
+for(
+let i = lista.length - 1;
+i > 0;
+i--
+){
 
-const j = Math.floor(Math.random() * (i + 1));
+const j =
+Math.floor(
+Math.random() * (i + 1)
+);
 
-[lista[i], lista[j]] = [lista[j], lista[i]];
+[lista[i], lista[j]] =
+[lista[j], lista[i]];
 
 }
 
 return lista;
 
+}
+
+/* ============================
+   GARANTIR 48
+============================ */
+function limitar48(lista){
+return lista.slice(0,48);
 }
 
 /* ============================
@@ -237,11 +269,14 @@ const termos = [
 
 embaralhar(termos);
 
-/* pega 18 termos diferentes */
-const escolhidos = termos.slice(0,18);
+/* pega 18 termos */
+const escolhidos =
+termos.slice(0,18);
 
 const promessas =
-escolhidos.map(t => buscarProdutos(t,8));
+escolhidos.map(t =>
+buscarProdutos(t,8)
+);
 
 const resultados =
 await Promise.all(promessas);
@@ -252,13 +287,10 @@ resultados.forEach(lista=>{
 todos = todos.concat(lista);
 });
 
-/* processa */
 todos = filtrarNicho(todos);
 todos = removerDuplicados(todos);
 todos = embaralhar(todos);
-
-/* 48 itens */
-todos = todos.slice(0,48);
+todos = limitar48(todos);
 
 const resposta = {
 data:{
@@ -277,27 +309,51 @@ return resposta;
 
 /* ============================
    HOME
-   sempre nova ao atualizar
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
-const force = req.query.refresh === "1";
+try{
 
-const data = await buscarMaisProcurados(force);
+const force =
+req.query.refresh === "1";
 
-res.set("Cache-Control","no-store");
+const data =
+await buscarMaisProcurados(force);
+
+res.set({
+"Cache-Control":"no-store, no-cache, must-revalidate, private",
+"Pragma":"no-cache",
+"Expires":"0"
+});
 
 res.json(data);
+
+}catch(e){
+
+res.json({
+data:{
+productOfferV2:{
+nodes:[]
+}
+}
+});
+
+}
 
 });
 
 /* ============================
-   BUSCA 48 NOVA
+   BUSCA 48
 ============================ */
 app.get("/buscar/:termo", async(req,res)=>{
 
-const termo =
-req.params.termo.toLowerCase().trim();
+try{
+
+const termo = String(
+req.params.termo || ""
+)
+.toLowerCase()
+.trim();
 
 const lista = [
 
@@ -321,7 +377,11 @@ const lista = [
 embaralhar(lista);
 
 const promessas =
-lista.slice(0,12).map(t => buscarProdutos(t,8));
+lista
+.slice(0,12)
+.map(t =>
+buscarProdutos(t,8)
+);
 
 const resultados =
 await Promise.all(promessas);
@@ -335,11 +395,13 @@ todos = todos.concat(r);
 todos = filtrarNicho(todos);
 todos = removerDuplicados(todos);
 todos = embaralhar(todos);
+todos = limitar48(todos);
 
-/* 48 */
-todos = todos.slice(0,48);
-
-res.set("Cache-Control","no-store");
+res.set({
+"Cache-Control":"no-store, no-cache, must-revalidate, private",
+"Pragma":"no-cache",
+"Expires":"0"
+});
 
 res.json({
 data:{
@@ -349,18 +411,40 @@ nodes:todos
 }
 });
 
+}catch(e){
+
+res.json({
+data:{
+productOfferV2:{
+nodes:[]
+}
+}
+});
+
+}
+
 });
 
 /* ============================
    INDEX
 ============================ */
 app.get("/",(req,res)=>{
-res.sendFile(path.join(__dirname,"public/index.html"));
+res.sendFile(
+path.join(
+__dirname,
+"public/index.html"
+)
+);
 });
 
 /* ============================
    START
 ============================ */
-app.listen(10000,()=>{
-console.log("Servidor ON porta 10000");
+const PORT =
+process.env.PORT || 10000;
+
+app.listen(PORT,()=>{
+console.log(
+"Servidor ON porta " + PORT
+);
 });
