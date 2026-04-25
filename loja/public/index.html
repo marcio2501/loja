@@ -131,8 +131,6 @@ box-shadow:var(--shadow);
 font-family:'Poppins',sans-serif;
 }
 
-/* HEADER MINI */
-
 header.mini .brand-row{
 justify-content:flex-start;
 margin-bottom:8px;
@@ -171,7 +169,7 @@ gap:12px;
 }
 
 .card{
-background:rgba(255,255,255,.97);
+background:#fff;
 border-radius:18px;
 padding:8px;
 box-shadow:var(--shadow);
@@ -223,7 +221,6 @@ font-size:13px;
 font-weight:700;
 cursor:pointer;
 background:linear-gradient(135deg,var(--gold),var(--gold2));
-font-family:'Poppins',sans-serif;
 }
 
 /* MODAL */
@@ -257,7 +254,6 @@ border-radius:14px;
 margin-top:12px;
 font-size:18px;
 font-weight:700;
-line-height:1.4;
 }
 
 .modal-price{
@@ -267,8 +263,7 @@ font-weight:700;
 color:var(--gold);
 }
 
-.modal-btn,
-.fechar-btn{
+.modal-btn,.fechar-btn{
 width:100%;
 height:46px;
 border:none;
@@ -276,7 +271,6 @@ border-radius:12px;
 margin-top:12px;
 font-weight:700;
 cursor:pointer;
-font-family:'Poppins',sans-serif;
 }
 
 .modal-btn{
@@ -284,6 +278,86 @@ background:linear-gradient(135deg,var(--gold),var(--gold2));
 }
 
 .fechar-btn{
+background:#222;
+color:#fff;
+}
+
+/* POPUP INSTALAÇÃO */
+
+#pwaPopup{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+display:none;
+z-index:10000;
+align-items:center;
+justify-content:center;
+padding:18px;
+}
+
+.pwa-box{
+width:100%;
+max-width:420px;
+background:#fff;
+border-radius:22px;
+padding:22px;
+box-shadow:0 20px 40px rgba(0,0,0,.18);
+text-align:center;
+animation:subir .25s ease;
+}
+
+@keyframes subir{
+from{transform:translateY(25px);opacity:0}
+to{transform:translateY(0);opacity:1}
+}
+
+.pwa-logo{
+width:72px;
+height:72px;
+border-radius:18px;
+margin:auto auto 14px;
+display:block;
+}
+
+.pwa-title{
+font-size:22px;
+font-weight:700;
+margin-bottom:8px;
+}
+
+.pwa-text{
+font-size:14px;
+color:#666;
+line-height:1.6;
+margin-bottom:12px;
+}
+
+.pwa-steps{
+background:#f8f4ea;
+padding:14px;
+border-radius:14px;
+font-size:14px;
+line-height:1.8;
+text-align:left;
+margin-bottom:12px;
+}
+
+.pwa-btn,
+.pwa-close{
+width:100%;
+height:46px;
+border:none;
+border-radius:14px;
+font-weight:700;
+cursor:pointer;
+margin-top:8px;
+}
+
+.pwa-btn{
+background:linear-gradient(135deg,var(--gold),var(--gold2));
+}
+
+.pwa-close{
 background:#222;
 color:#fff;
 }
@@ -310,8 +384,6 @@ font-weight:600;
 text-align:center;
 }
 
-/* RESPONSIVO */
-
 @media(min-width:768px){
 .grid{grid-template-columns:repeat(3,minmax(0,1fr));}
 .top-search{grid-template-columns:minmax(0,1fr) 110px;}
@@ -333,21 +405,16 @@ text-align:center;
 <div class="header-wrap">
 
 <div class="brand-row">
-<button class="logo-btn" type="button" onclick="voltarInicio()" aria-label="Voltar ao início">
-<img
-class="logo"
+<button class="logo-btn" type="button" onclick="voltarInicio()">
+<img class="logo"
 src="https://i.ibb.co/fzH4Tk85/Chat-GPT-Image-24-04-2026-20-19-44.png"
 alt="Axé Shop">
 </button>
 </div>
 
 <div class="top-search">
-<input
-type="search"
-id="buscar"
-class="busca-input"
-placeholder="Buscar vela, guia, erva..."
-enterkeyhint="search">
+<input type="search" id="buscar" class="busca-input"
+placeholder="Buscar vela, guia, erva..." enterkeyhint="search">
 
 <button class="buscar-btn" onclick="buscarProduto()">
 Buscar
@@ -358,20 +425,46 @@ Buscar
 </header>
 
 <main class="container">
-<div id="produtos" class="status">Carregando produtos...</div>
+<div id="produtos" class="status">
+Carregando produtos...
+</div>
 </main>
 
 <!-- MODAL -->
 <div class="modal" id="modalProduto">
 <div class="modal-box">
-
 <img id="mImg" class="modal-img">
-
 <div id="mTitulo" class="modal-title"></div>
 <div id="mPreco" class="modal-price"></div>
 
 <button class="modal-btn" id="mComprar">Comprar</button>
 <button class="fechar-btn" onclick="fecharModal()">Fechar</button>
+</div>
+</div>
+
+<!-- POPUP INSTALAR -->
+<div id="pwaPopup">
+<div class="pwa-box">
+
+<img src="logo192.png" class="pwa-logo">
+
+<div class="pwa-title" id="pwaTitulo">
+Instalar Axé Shop
+</div>
+
+<div class="pwa-text" id="pwaTexto">
+Tenha acesso rápido como aplicativo.
+</div>
+
+<div class="pwa-steps" id="pwaSteps"></div>
+
+<button class="pwa-btn" id="pwaBtn">
+Instalar Agora
+</button>
+
+<button class="pwa-close" onclick="fecharPWA()">
+Agora não
+</button>
 
 </div>
 </div>
@@ -383,7 +476,9 @@ Buscar
 <p>Alguns links podem gerar comissão de afiliado.</p>
 </div>
 
-<div class="footer-copy">© 2026 Axé Shop</div>
+<div class="footer-copy">
+© 2026 Axé Shop
+</div>
 </footer>
 
 <script>
@@ -391,36 +486,21 @@ function moeda(v){
 return Number(v || 0).toFixed(2);
 }
 
-/* =========================
-   VOLTAR INÍCIO
-   funciona navegador + app
-========================= */
+function urlNova(base){
+return base + (base.includes("?") ? "&":"?") + "t=" + Date.now();
+}
+
+/* INÍCIO */
 
 function voltarInicio(){
-
-document.getElementById("buscar").value = "";
-
+document.getElementById("buscar").value="";
 fecharModal();
-
-/* força nova vitrine sem repetir */
-carregarProdutos("/produtos?refresh=1&t=" + Date.now());
-
-/* limpa rota */
-if(location.pathname !== "/"){
 history.replaceState({}, "", "/");
+carregarProdutos(urlNova("/produtos?refresh=1"));
+window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* sobe topo */
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-
-}
-
-/* =========================
-   CARREGAR PRODUTOS
-========================= */
+/* PRODUTOS */
 
 async function carregarProdutos(url="/produtos?refresh=1"){
 
@@ -431,19 +511,10 @@ box.innerHTML="Carregando produtos...";
 
 try{
 
-const r=await fetch(url,{
-cache:"no-store"
-});
-
+const r=await fetch(url,{cache:"no-store"});
 const data=await r.json();
 
-if(
-!data ||
-!data.data ||
-!data.data.productOfferV2 ||
-!data.data.productOfferV2.nodes ||
-data.data.productOfferV2.nodes.length===0
-){
+if(!data?.data?.productOfferV2?.nodes){
 box.innerHTML="Nenhum produto encontrado.";
 return;
 }
@@ -467,18 +538,14 @@ html+=`
 onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
 
 <div class="img-wrap">
-<img
-src="${img}"
-loading="lazy"
+<img src="${img}" loading="lazy"
 onerror="this.src='https://via.placeholder.com/400?text=Produto'">
 </div>
 
 <div class="title">${nome}</div>
-
 <div class="price">R$ ${preco}</div>
 
-<button
-class="btn"
+<button class="btn"
 onclick="event.stopPropagation();window.open('${link}','_blank')">
 Comprar
 </button>
@@ -488,22 +555,14 @@ Comprar
 
 });
 
-html+='</div>';
-
+html+="</div>";
 box.className="";
 box.innerHTML=html;
 
 }catch(e){
-
 box.innerHTML="Erro ao carregar produtos.";
-
 }
-
 }
-
-/* =========================
-   BUSCA
-========================= */
 
 function buscarProduto(){
 
@@ -514,84 +573,182 @@ voltarInicio();
 return;
 }
 
-history.replaceState({}, "", "/");
-
 carregarProdutos(
-"/buscar/" +
-encodeURIComponent(termo) +
-"?t=" + Date.now()
+urlNova("/buscar/" + encodeURIComponent(termo))
 );
 
+window.scrollTo({top:0,behavior:"smooth"});
 }
 
-document.getElementById("buscar").addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-buscarProduto();
-}
-
+document.getElementById("buscar").addEventListener("keydown",e=>{
+if(e.key==="Enter") buscarProduto();
 });
 
-/* =========================
-   MODAL
-========================= */
+/* MODAL */
 
 function abrirModal(nome,img,preco,link){
 
-document.getElementById("mImg").src=img;
-document.getElementById("mTitulo").innerText=nome;
-document.getElementById("mPreco").innerText="R$ " + preco;
+mImg.src=img;
+mTitulo.innerText=nome;
+mPreco.innerText="R$ "+preco;
 
-document.getElementById("mComprar").onclick=()=>{
+mComprar.onclick=()=>{
 window.open(link,"_blank");
 };
 
-document.getElementById("modalProduto").style.display="block";
-
+modalProduto.style.display="block";
 }
 
 function fecharModal(){
-document.getElementById("modalProduto").style.display="none";
+modalProduto.style.display="none";
 }
 
-document.getElementById("modalProduto").addEventListener("click",function(e){
+modalProduto.onclick=e=>{
+if(e.target.id==="modalProduto") fecharModal();
+};
 
-if(e.target.id==="modalProduto"){
-fecharModal();
-}
-
-});
-
-/* =========================
-   HEADER MINI
-========================= */
+/* HEADER */
 
 let ativo=false;
 
-window.addEventListener("scroll",function(){
+window.addEventListener("scroll",()=>{
 
-const mini=window.scrollY>70;
+const mini=scrollY>70;
 
 if(mini!==ativo){
-document.getElementById("topo").classList.toggle("mini",mini);
+topo.classList.toggle("mini",mini);
 ativo=mini;
 }
 
 },{passive:true});
 
-/* =========================
-   SERVICE WORKER
-========================= */
+/* ========================
+   INSTALAÇÃO PWA
+======================== */
+
+const ua=navigator.userAgent.toLowerCase();
+let deferredPrompt=null;
+
+function isIOS(){
+return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function isStandalone(){
+return window.matchMedia("(display-mode: standalone)").matches ||
+window.navigator.standalone === true;
+}
+
+function isInApp(){
+return ua.includes("instagram") ||
+ua.includes("fb") ||
+ua.includes("messenger");
+}
+
+window.addEventListener("beforeinstallprompt",(e)=>{
+e.preventDefault();
+deferredPrompt=e;
+});
+
+function abrirPWA(){
+
+if(isStandalone()) return;
+
+const popup=document.getElementById("pwaPopup");
+popup.style.display="flex";
+
+const titulo=document.getElementById("pwaTitulo");
+const texto=document.getElementById("pwaTexto");
+const steps=document.getElementById("pwaSteps");
+const btn=document.getElementById("pwaBtn");
+
+/* Instagram/Facebook */
+if(isInApp()){
+
+titulo.innerText="Abra no Navegador";
+texto.innerText="Você está dentro do Instagram/Facebook.";
+steps.innerHTML=`
+1. Toque em ⋮<br>
+2. Abrir no navegador<br>
+3. Depois instale o aplicativo
+`;
+
+btn.innerText="Copiar Link";
+btn.onclick=()=>{
+navigator.clipboard.writeText(location.href);
+alert("Link copiado!");
+};
+
+return;
+}
+
+/* iPhone */
+if(isIOS()){
+
+titulo.innerText="Instalar no iPhone";
+texto.innerText="Siga os passos abaixo:";
+steps.innerHTML=`
+1. Toque em Compartilhar ⤴<br>
+2. Adicionar à Tela de Início<br>
+3. Confirmar
+`;
+
+btn.innerText="Entendi";
+btn.onclick=fecharPWA;
+return;
+}
+
+/* Android / Chrome */
+if(deferredPrompt){
+
+titulo.innerText="Instalar Aplicativo";
+texto.innerText="Instale Axé Shop agora.";
+steps.innerHTML=`
+✔ Abre como app<br>
+✔ Mais rápido<br>
+✔ Acesso fácil
+`;
+
+btn.innerText="Instalar Agora";
+
+btn.onclick=async()=>{
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+fecharPWA();
+};
+
+return;
+}
+
+/* Fallback */
+
+titulo.innerText="Instalar Aplicativo";
+texto.innerText="Use o menu do navegador.";
+steps.innerHTML=`
+Chrome / Edge:<br>
+⋮ > Instalar aplicativo
+`;
+
+btn.innerText="Entendi";
+btn.onclick=fecharPWA;
+}
+
+function fecharPWA(){
+document.getElementById("pwaPopup").style.display="none";
+}
+
+/* SERVICE WORKER */
 
 if("serviceWorker" in navigator){
 navigator.serviceWorker.register("service-worker.js");
 }
 
-/* =========================
-   START
-========================= */
+/* START */
 
-carregarProdutos("/produtos?refresh=1&t=" + Date.now());
+carregarProdutos(urlNova("/produtos?refresh=1"));
+
+setTimeout(()=>{
+abrirPWA();
+},2200);
 </script>
 
 </body>
