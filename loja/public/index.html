@@ -3,11 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
 <title>Axé Shop</title>
 
 <meta name="theme-color" content="#d7b26d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Axé Shop">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="manifest" href="manifest.json">
+
+<link rel="apple-touch-icon" href="logo192.png">
+<link rel="icon" type="image/png" href="logo.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin">
@@ -21,7 +29,6 @@
 --gold:#c89d47;
 --gold2:#e4bf77;
 --dark:#2c261f;
---card:#ffffff;
 --muted:#756e66;
 --shadow:0 10px 24px rgba(0,0,0,.07);
 }
@@ -55,8 +62,8 @@ background:rgba(243,238,228,.94);
 backdrop-filter:blur(12px);
 -webkit-backdrop-filter:blur(12px);
 border-bottom:1px solid rgba(0,0,0,.03);
-padding:calc(env(safe-area-inset-top) + 10px) 12px 10px;
-transition:all .28s ease;
+padding:calc(env(safe-area-inset-top) + 10px) 12px 8px;
+transition:.28s ease;
 }
 
 .header-wrap{
@@ -72,24 +79,16 @@ margin-bottom:10px;
 transition:.28s ease;
 }
 
-.logo-link{
-display:block;
-text-decoration:none;
-}
-
 .logo{
 display:block;
-width:auto;
-height:auto;
 max-width:min(100%,860px);
 max-height:170px;
+width:auto;
+height:auto;
 margin:auto;
-object-fit:contain;
 border-radius:18px;
-transition:all .28s ease;
+transition:.28s ease;
 }
-
-/* SEARCH */
 
 .top-search{
 display:grid;
@@ -97,7 +96,6 @@ grid-template-columns:minmax(0,1fr) 96px;
 gap:8px;
 max-width:780px;
 margin:auto;
-transition:.28s ease;
 }
 
 .busca-input{
@@ -107,28 +105,19 @@ outline:none;
 border-radius:14px;
 padding:0 14px;
 font-size:14px;
-font-family:'Poppins',sans-serif;
 background:#fff;
 box-shadow:var(--shadow);
-appearance:none;
 }
 
 .buscar-btn{
 height:46px;
 border:none;
 border-radius:14px;
-font-size:14px;
 font-weight:700;
 cursor:pointer;
 background:linear-gradient(135deg,var(--gold),var(--gold2));
 color:var(--dark);
 box-shadow:var(--shadow);
-}
-
-/* HEADER MINI */
-
-header.mini{
-padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;
 }
 
 header.mini .brand-row{
@@ -141,10 +130,6 @@ max-width:220px;
 max-height:52px;
 margin:0;
 border-radius:12px;
-}
-
-header.mini .top-search{
-max-width:100%;
 }
 
 /* MAIN */
@@ -162,15 +147,11 @@ font-weight:600;
 color:var(--muted);
 }
 
-/* GRID */
-
 .grid{
 display:grid;
 grid-template-columns:repeat(2,minmax(0,1fr));
 gap:12px;
 }
-
-/* CARD */
 
 .card{
 background:rgba(255,255,255,.97);
@@ -180,11 +161,6 @@ box-shadow:var(--shadow);
 display:flex;
 flex-direction:column;
 cursor:pointer;
-transition:transform .15s ease;
-}
-
-.card:active{
-transform:scale(.985);
 }
 
 .img-wrap{
@@ -230,7 +206,6 @@ font-size:13px;
 font-weight:700;
 cursor:pointer;
 background:linear-gradient(135deg,var(--gold),var(--gold2));
-color:var(--dark);
 }
 
 /* MODAL */
@@ -251,7 +226,6 @@ max-width:520px;
 margin:20px auto;
 border-radius:20px;
 padding:14px;
-box-shadow:var(--shadow);
 }
 
 .modal-img{
@@ -259,14 +233,12 @@ width:100%;
 aspect-ratio:1/1;
 object-fit:cover;
 border-radius:14px;
-background:#f2f2f2;
 }
 
 .modal-title{
 margin-top:12px;
 font-size:18px;
 font-weight:700;
-line-height:1.4;
 }
 
 .modal-price{
@@ -276,28 +248,18 @@ font-weight:700;
 color:var(--gold);
 }
 
-.modal-desc{
-margin-top:8px;
-font-size:14px;
-line-height:1.6;
-color:#666;
-}
-
-.modal-btn,
-.fechar-btn{
+.modal-btn,.fechar-btn{
 width:100%;
 height:46px;
 border:none;
 border-radius:12px;
-font-size:15px;
-font-weight:700;
 margin-top:12px;
+font-weight:700;
 cursor:pointer;
 }
 
 .modal-btn{
 background:linear-gradient(135deg,var(--gold),var(--gold2));
-color:var(--dark);
 }
 
 .fechar-btn{
@@ -311,12 +273,6 @@ footer{
 margin-top:28px;
 padding:18px 16px 28px;
 background:rgba(255,255,255,.35);
-border-top:1px solid rgba(0,0,0,.04);
-}
-
-.footer-box{
-max-width:1100px;
-margin:auto;
 }
 
 .footer-mini{
@@ -326,47 +282,95 @@ text-align:center;
 color:var(--muted);
 }
 
-.footer-mini p{
-margin-bottom:8px;
-}
-
 .footer-copy{
 margin-top:10px;
 font-size:11px;
 font-weight:600;
 text-align:center;
-color:#8f867d;
 }
 
-/* RESPONSIVO */
+/* PWA POPUP */
+
+#pwaPopup{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+display:none;
+z-index:10000;
+padding:18px;
+align-items:center;
+justify-content:center;
+}
+
+.pwa-box{
+width:100%;
+max-width:420px;
+background:#fff;
+border-radius:22px;
+padding:22px;
+box-shadow:0 20px 40px rgba(0,0,0,.18);
+text-align:center;
+}
+
+.pwa-logo{
+width:68px;
+height:68px;
+border-radius:18px;
+margin:auto auto 14px;
+display:block;
+}
+
+.pwa-title{
+font-size:22px;
+font-weight:700;
+margin-bottom:8px;
+color:var(--dark);
+}
+
+.pwa-text{
+font-size:14px;
+color:#666;
+margin-bottom:12px;
+line-height:1.6;
+}
+
+.pwa-steps{
+font-size:14px;
+line-height:1.8;
+background:#f8f4ea;
+padding:14px;
+border-radius:14px;
+margin-bottom:14px;
+}
+
+.pwa-btn,
+.pwa-close{
+width:100%;
+height:46px;
+border:none;
+border-radius:14px;
+font-weight:700;
+cursor:pointer;
+margin-top:8px;
+}
+
+.pwa-btn{
+background:linear-gradient(135deg,var(--gold),var(--gold2));
+}
+
+.pwa-close{
+background:#222;
+color:#fff;
+}
 
 @media(min-width:768px){
 
 .grid{
 grid-template-columns:repeat(3,minmax(0,1fr));
-gap:14px;
 }
 
 .top-search{
 grid-template-columns:minmax(0,1fr) 110px;
-}
-
-.logo{
-max-height:210px;
-}
-
-header.mini .logo{
-max-width:250px;
-max-height:60px;
-}
-
-.title{
-font-size:14px;
-height:40px;
-}
-
-.price{
-font-size:20px;
 }
 
 }
@@ -375,15 +379,6 @@ font-size:20px;
 
 .grid{
 grid-template-columns:repeat(4,minmax(0,1fr));
-gap:18px;
-}
-
-.container{
-padding:18px;
-}
-
-.logo{
-max-height:240px;
 }
 
 }
@@ -395,104 +390,94 @@ grid-template-columns:repeat(5,minmax(0,1fr));
 }
 
 }
-
-button,input{
-font:inherit;
-}
 </style>
 </head>
 
 <body>
 
 <header id="topo">
-
 <div class="header-wrap">
 
 <div class="brand-row">
-<a href="/" class="logo-link">
-<img
-class="logo"
+<img class="logo"
 src="https://i.ibb.co/fzH4Tk85/Chat-GPT-Image-24-04-2026-20-19-44.png"
 alt="Axé Shop">
-</a>
 </div>
 
 <div class="top-search">
-
-<input
-type="search"
-id="buscar"
-class="busca-input"
-placeholder="Buscar vela, guia, erva..."
-enterkeyhint="search">
-
-<button class="buscar-btn" onclick="buscarProduto()">
-Buscar
-</button>
-
+<input type="search" id="buscar" class="busca-input" placeholder="Buscar vela, guia, erva...">
+<button class="buscar-btn" onclick="buscarProduto()">Buscar</button>
 </div>
 
 </div>
-
 </header>
 
 <main class="container">
-<div id="produtos" class="status">
-Carregando produtos...
-</div>
+<div id="produtos" class="status">Carregando produtos...</div>
 </main>
 
 <!-- MODAL -->
-
 <div class="modal" id="modalProduto">
 <div class="modal-box">
 
 <img id="mImg" class="modal-img">
 
 <div id="mTitulo" class="modal-title"></div>
-
 <div id="mPreco" class="modal-price"></div>
 
-<div class="modal-desc">
-Produto selecionado da vitrine Axé Shop.
+<button class="modal-btn" id="mComprar">Comprar</button>
+<button class="fechar-btn" onclick="fecharModal()">Fechar</button>
+
+</div>
 </div>
 
-<button class="modal-btn" id="mComprar">
-Comprar
+<!-- PWA POPUP -->
+<div id="pwaPopup">
+
+<div class="pwa-box">
+
+<img src="logo192.png" class="pwa-logo">
+
+<div class="pwa-title" id="pwaTitulo">
+Instalar Axé Shop
+</div>
+
+<div class="pwa-text" id="pwaTexto">
+Tenha acesso rápido como aplicativo.
+</div>
+
+<div class="pwa-steps" id="pwaSteps"></div>
+
+<button class="pwa-btn" id="pwaBtn">
+Instalar
 </button>
 
-<button class="fechar-btn" onclick="fecharModal()">
-Fechar
+<button class="pwa-close" onclick="fecharPWA()">
+Agora não
 </button>
 
 </div>
 </div>
 
 <footer>
-<div class="footer-box">
-
 <div class="footer-mini">
 <p>Axé Shop é uma vitrine digital independente.</p>
-<p>Pagamento, entrega e garantia são responsabilidade da loja de destino.</p>
-<p>Alguns links podem gerar comissão de afiliado sem custo adicional.</p>
-<p>Marcas citadas pertencem aos seus titulares.</p>
+<p>Pagamento e entrega são responsabilidade da loja de destino.</p>
+<p>Alguns links podem gerar comissão de afiliado.</p>
 </div>
 
 <div class="footer-copy">
 © 2026 Axé Shop
 </div>
-
-</div>
 </footer>
 
 <script>
 function moeda(v){
-return Number(v || 0).toFixed(2);
+return Number(v||0).toFixed(2);
 }
 
-/* =========================
-   CARREGA 48 ITENS
-========================= */
+/* PRODUTOS */
+
 async function carregarProdutos(url="/produtos"){
 
 const box=document.getElementById("produtos");
@@ -505,40 +490,29 @@ try{
 const r=await fetch(url,{cache:"no-store"});
 const data=await r.json();
 
-if(!data?.data?.productOfferV2?.nodes){
-box.innerHTML="Nenhum produto encontrado.";
-return;
-}
-
-/* PEGA 48 */
 let produtos=data.data.productOfferV2.nodes.slice(0,48);
 
 let html='<div class="grid">';
 
 produtos.forEach(p=>{
 
-const nome=(p.productName || "Produto").replace(/'/g,"");
-const img=p.imageUrl || "";
+const nome=(p.productName||"Produto").replace(/'/g,"");
+const img=p.imageUrl||"";
 const preco=moeda(p.price);
-const link=p.offerLink || "#";
+const link=p.offerLink||"#";
 
 html+=`
 <div class="card"
 onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
 
 <div class="img-wrap">
-<img
-src="${img}"
-loading="lazy"
-onerror="this.src='https://via.placeholder.com/400?text=Produto'">
+<img src="${img}" loading="lazy">
 </div>
 
 <div class="title">${nome}</div>
-
 <div class="price">R$ ${preco}</div>
 
-<button
-class="btn"
+<button class="btn"
 onclick="event.stopPropagation();window.open('${link}','_blank')">
 Comprar
 </button>
@@ -549,39 +523,13 @@ Comprar
 });
 
 html+="</div>";
-
 box.className="";
 box.innerHTML=html;
 
 }catch(e){
-
 box.innerHTML="Erro ao carregar produtos.";
-
 }
-
 }
-
-/* MODAL */
-
-function abrirModal(nome,img,preco,link){
-
-document.getElementById("mImg").src=img;
-document.getElementById("mTitulo").innerText=nome;
-document.getElementById("mPreco").innerText="R$ "+preco;
-
-document.getElementById("mComprar").onclick=()=>{
-window.open(link,"_blank");
-};
-
-document.getElementById("modalProduto").style.display="block";
-
-}
-
-function fecharModal(){
-document.getElementById("modalProduto").style.display="none";
-}
-
-/* BUSCA 48 */
 
 function buscarProduto(){
 
@@ -592,54 +540,154 @@ carregarProdutos("/produtos");
 return;
 }
 
-/* backend já retorna 48 */
-carregarProdutos("/buscar/" + encodeURIComponent(termo));
-
+carregarProdutos("/buscar/"+encodeURIComponent(termo));
 }
 
-document.getElementById("buscar").addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-buscarProduto();
-}
-
+document.getElementById("buscar").addEventListener("keydown",e=>{
+if(e.key==="Enter") buscarProduto();
 });
+
+/* MODAL */
+
+function abrirModal(nome,img,preco,link){
+
+mImg.src=img;
+mTitulo.innerText=nome;
+mPreco.innerText="R$ "+preco;
+
+mComprar.onclick=()=>window.open(link,"_blank");
+
+modalProduto.style.display="block";
+}
+
+function fecharModal(){
+modalProduto.style.display="none";
+}
+
+modalProduto.onclick=e=>{
+if(e.target.id==="modalProduto") fecharModal();
+};
 
 /* HEADER */
 
 let ativo=false;
-let rodando=false;
 
-function atualizarHeader(){
+window.addEventListener("scroll",()=>{
 
-const mini=window.scrollY>70;
+const mini=scrollY>70;
 
 if(mini!==ativo){
-document.getElementById("topo").classList.toggle("mini",mini);
+topo.classList.toggle("mini",mini);
 ativo=mini;
-}
-
-rodando=false;
-}
-
-window.addEventListener("scroll",function(){
-
-if(!rodando){
-requestAnimationFrame(atualizarHeader);
-rodando=true;
 }
 
 },{passive:true});
 
-/* FECHAR MODAL */
+/* ==========================
+PWA
+========================== */
 
-document.getElementById("modalProduto").addEventListener("click",function(e){
+const ua=navigator.userAgent.toLowerCase();
 
-if(e.target.id==="modalProduto"){
-fecharModal();
+let deferredPrompt;
+
+function isIOS(){
+return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
+function isInApp(){
+return ua.includes("instagram") || ua.includes("fb") || ua.includes("messenger");
+}
+
+window.addEventListener("beforeinstallprompt",(e)=>{
+e.preventDefault();
+deferredPrompt=e;
 });
+
+function abrirPWA(){
+
+if(window.matchMedia('(display-mode: standalone)').matches) return;
+
+const popup=document.getElementById("pwaPopup");
+popup.style.display="flex";
+
+if(isInApp()){
+
+pwaTitulo.innerText="ABRIR NO NAVEGADOR";
+pwaTexto.innerText="Você está dentro do Instagram/Facebook.";
+pwaSteps.innerHTML=`
+1. Toque em ⋮ <br>
+2. Abrir no navegador <br>
+3. Depois instale o app
+`;
+
+pwaBtn.innerText="Copiar Link";
+pwaBtn.onclick=()=>{
+navigator.clipboard.writeText(location.href);
+alert("Link copiado!");
+};
+
+return;
+}
+
+if(isIOS()){
+
+pwaTitulo.innerText="INSTALAR NO IPHONE";
+pwaTexto.innerText="Siga os passos abaixo:";
+pwaSteps.innerHTML=`
+1. Compartilhar ⤴<br>
+2. Adicionar à Tela Inicial<br>
+3. Confirmar
+`;
+
+pwaBtn.innerText="Entendi";
+pwaBtn.onclick=fecharPWA;
+
+return;
+}
+
+if(deferredPrompt){
+
+pwaTitulo.innerText="INSTALAR APLICATIVO";
+pwaTexto.innerText="Instale Axé Shop agora.";
+pwaSteps.innerHTML=`
+✔ Abre como app<br>
+✔ Mais rápido<br>
+✔ Acesso fácil
+`;
+
+pwaBtn.innerText="Instalar Agora";
+pwaBtn.onclick=async()=>{
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+fecharPWA();
+};
+
+return;
+}
+
+pwaTitulo.innerText="INSTALAR";
+pwaTexto.innerText="Use menu do navegador.";
+pwaSteps.innerHTML=`
+Chrome / Edge:<br>
+⋮ > Instalar aplicativo
+`;
+
+pwaBtn.innerText="Entendi";
+pwaBtn.onclick=fecharPWA;
+}
+
+function fecharPWA(){
+pwaPopup.style.display="none";
+}
+
+setTimeout(abrirPWA,2200);
+
+/* SERVICE WORKER */
+
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js");
+}
 
 /* START */
 
