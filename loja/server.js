@@ -19,11 +19,12 @@ const APP_SECRET = process.env.APP_SECRET;
 const API_URL = "https://open-api.affiliate.shopee.com.br/graphql";
 
 /* ============================
-   CACHE
+   CACHE HOME
+   sempre renova ao atualizar
 ============================ */
 let cacheHome = null;
 let cacheTempo = 0;
-const CACHE_MS = 10000;
+const CACHE_MS = 1500;
 
 /* ============================
    ASSINATURA
@@ -103,7 +104,7 @@ return [];
 }
 
 /* ============================
-   FILTRO DO NICHO
+   FILTRO NICHO
 ============================ */
 function filtrarNicho(lista){
 
@@ -176,18 +177,29 @@ return true;
 }
 
 /* ============================
-   EMBARALHAR
+   EMBARALHAR REAL
 ============================ */
 function embaralhar(lista){
-return lista.sort(()=>Math.random()-0.5);
+
+for(let i = lista.length - 1; i > 0; i--){
+
+const j = Math.floor(Math.random() * (i + 1));
+
+[lista[i], lista[j]] = [lista[j], lista[i]];
+
+}
+
+return lista;
+
 }
 
 /* ============================
-   VITRINE HOME 48
+   HOME 48 SEMPRE NOVA
 ============================ */
-async function buscarMaisProcurados(){
+async function buscarMaisProcurados(force = false){
 
 if(
+!force &&
 cacheHome &&
 (Date.now() - cacheTempo < CACHE_MS)
 ){
@@ -215,14 +227,18 @@ const termos = [
 "cristal energia",
 "quartzo rosa",
 "ametista",
-"atabaque umbanda"
+"atabaque umbanda",
+"guia proteção",
+"vela exu",
+"banho espiritual",
+"quartzo branco"
 
 ];
 
 embaralhar(termos);
 
-/* usa 16 termos */
-const escolhidos = termos.slice(0,16);
+/* pega 18 termos diferentes */
+const escolhidos = termos.slice(0,18);
 
 const promessas =
 escolhidos.map(t => buscarProdutos(t,8));
@@ -236,11 +252,12 @@ resultados.forEach(lista=>{
 todos = todos.concat(lista);
 });
 
+/* processa */
 todos = filtrarNicho(todos);
 todos = removerDuplicados(todos);
 todos = embaralhar(todos);
 
-/* EXATAMENTE 48 */
+/* 48 itens */
 todos = todos.slice(0,48);
 
 const resposta = {
@@ -260,17 +277,22 @@ return resposta;
 
 /* ============================
    HOME
+   sempre nova ao atualizar
 ============================ */
 app.get("/produtos", async(req,res)=>{
 
-const data = await buscarMaisProcurados();
+const force = req.query.refresh === "1";
+
+const data = await buscarMaisProcurados(force);
+
+res.set("Cache-Control","no-store");
 
 res.json(data);
 
 });
 
 /* ============================
-   BUSCA 48 RESULTADOS
+   BUSCA 48 NOVA
 ============================ */
 app.get("/buscar/:termo", async(req,res)=>{
 
@@ -290,12 +312,16 @@ const lista = [
 `${termo} banho`,
 `${termo} incenso`,
 `${termo} exu`,
-`${termo} pomba gira`
+`${termo} pomba gira`,
+`${termo} caboclo`,
+`${termo} preto velho`
 
 ];
 
+embaralhar(lista);
+
 const promessas =
-lista.map(t => buscarProdutos(t,8));
+lista.slice(0,12).map(t => buscarProdutos(t,8));
 
 const resultados =
 await Promise.all(promessas);
@@ -310,8 +336,10 @@ todos = filtrarNicho(todos);
 todos = removerDuplicados(todos);
 todos = embaralhar(todos);
 
-/* EXATAMENTE 48 */
+/* 48 */
 todos = todos.slice(0,48);
+
+res.set("Cache-Control","no-store");
 
 res.json({
 data:{
@@ -324,7 +352,7 @@ nodes:todos
 });
 
 /* ============================
-   HOME HTML
+   INDEX
 ============================ */
 app.get("/",(req,res)=>{
 res.sendFile(path.join(__dirname,"public/index.html"));
