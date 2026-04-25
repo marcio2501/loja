@@ -78,6 +78,12 @@ margin-bottom:10px;
 transition:.28s ease;
 }
 
+.logo-link{
+display:block;
+cursor:pointer;
+text-decoration:none;
+}
+
 .logo{
 display:block;
 max-width:min(100%,860px);
@@ -380,31 +386,16 @@ color:#fff;
 }
 
 @media(min-width:768px){
-
-.grid{
-grid-template-columns:repeat(3,minmax(0,1fr));
-}
-
-.top-search{
-grid-template-columns:minmax(0,1fr) 110px;
-}
-
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+.top-search{grid-template-columns:minmax(0,1fr) 110px;}
 }
 
 @media(min-width:1100px){
-
-.grid{
-grid-template-columns:repeat(4,minmax(0,1fr));
-}
-
+.grid{grid-template-columns:repeat(4,minmax(0,1fr));}
 }
 
 @media(min-width:1400px){
-
-.grid{
-grid-template-columns:repeat(5,minmax(0,1fr));
-}
-
+.grid{grid-template-columns:repeat(5,minmax(0,1fr));}
 }
 </style>
 </head>
@@ -415,9 +406,11 @@ grid-template-columns:repeat(5,minmax(0,1fr));
 <div class="header-wrap">
 
 <div class="brand-row">
+<a href="/" class="logo-link" onclick="voltarInicio(event)">
 <img class="logo"
 src="https://i.ibb.co/fzH4Tk85/Chat-GPT-Image-24-04-2026-20-19-44.png"
 alt="Axé Shop">
+</a>
 </div>
 
 <div class="top-search">
@@ -435,15 +428,11 @@ alt="Axé Shop">
 <!-- MODAL -->
 <div class="modal" id="modalProduto">
 <div class="modal-box">
-
 <img id="mImg" class="modal-img">
-
 <div id="mTitulo" class="modal-title"></div>
 <div id="mPreco" class="modal-price"></div>
-
 <button class="modal-btn" id="mComprar">Comprar</button>
 <button class="fechar-btn" onclick="fecharModal()">Fechar</button>
-
 </div>
 </div>
 
@@ -479,6 +468,20 @@ alt="Axé Shop">
 <script>
 function moeda(v){
 return Number(v || 0).toFixed(2);
+}
+
+/* VOLTAR HOME NO BANNER */
+
+function voltarInicio(e){
+e.preventDefault();
+
+document.getElementById("buscar").value="";
+carregarProdutos("/produtos");
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 }
 
 /* PRODUTOS */
@@ -604,7 +607,6 @@ ativo=mini;
 /* PWA */
 
 const ua=navigator.userAgent.toLowerCase();
-
 let deferredPrompt;
 
 function isIOS(){
@@ -636,11 +638,7 @@ if(isInApp()){
 
 titulo.innerText="Abrir no Navegador";
 texto.innerText="Você está no Instagram ou Facebook.";
-steps.innerHTML=`
-1. Toque em ⋮<br>
-2. Abrir no navegador<br>
-3. Depois instale o app
-`;
+steps.innerHTML="1. Toque em ⋮<br>2. Abrir no navegador<br>3. Depois instale o app";
 
 btn.innerText="Copiar Link";
 btn.onclick=()=>{
@@ -655,15 +653,10 @@ if(isIOS()){
 
 titulo.innerText="Instalar no iPhone";
 texto.innerText="Siga os passos:";
-steps.innerHTML=`
-1. Compartilhar ⤴<br>
-2. Adicionar à Tela Inicial<br>
-3. Confirmar
-`;
+steps.innerHTML="1. Compartilhar ⤴<br>2. Adicionar à Tela Inicial<br>3. Confirmar";
 
 btn.innerText="Entendi";
 btn.onclick=fecharPWA;
-
 return;
 }
 
@@ -671,20 +664,14 @@ if(deferredPrompt){
 
 titulo.innerText="Instalar Aplicativo";
 texto.innerText="Instale Axé Shop agora.";
-steps.innerHTML=`
-✔ Acesso rápido<br>
-✔ Funciona como app<br>
-✔ Mais leve
-`;
+steps.innerHTML="✔ Acesso rápido<br>✔ Funciona como app<br>✔ Mais leve";
 
 btn.innerText="Instalar Agora";
 
 btn.onclick=async()=>{
-
 deferredPrompt.prompt();
 await deferredPrompt.userChoice;
 fecharPWA();
-
 };
 
 return;
@@ -692,10 +679,7 @@ return;
 
 titulo.innerText="Instalar";
 texto.innerText="Use o menu do navegador.";
-steps.innerHTML=`
-Chrome / Edge:<br>
-⋮ > Instalar aplicativo
-`;
+steps.innerHTML="Chrome / Edge:<br>⋮ > Instalar aplicativo";
 
 btn.innerText="Entendi";
 btn.onclick=fecharPWA;
