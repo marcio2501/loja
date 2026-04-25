@@ -51,8 +51,6 @@ color:var(--dark);
 overflow-x:hidden;
 }
 
-/* HEADER */
-
 header{
 position:sticky;
 top:0;
@@ -78,10 +76,14 @@ margin-bottom:10px;
 transition:.28s ease;
 }
 
-.logo-link{
-display:block;
+.logo-btn{
+border:none;
+background:none;
+padding:0;
 cursor:pointer;
-text-decoration:none;
+width:100%;
+display:flex;
+justify-content:center;
 }
 
 .logo{
@@ -132,14 +134,16 @@ justify-content:flex-start;
 margin-bottom:8px;
 }
 
+header.mini .logo-btn{
+justify-content:flex-start;
+}
+
 header.mini .logo{
 max-width:220px;
 max-height:52px;
 margin:0;
 border-radius:12px;
 }
-
-/* MAIN */
 
 .container{
 max-width:1500px;
@@ -168,11 +172,6 @@ box-shadow:var(--shadow);
 display:flex;
 flex-direction:column;
 cursor:pointer;
-transition:.15s ease;
-}
-
-.card:active{
-transform:scale(.985);
 }
 
 .img-wrap{
@@ -221,8 +220,6 @@ background:linear-gradient(135deg,var(--gold),var(--gold2));
 font-family:'Poppins',sans-serif;
 }
 
-/* MODAL */
-
 .modal{
 position:fixed;
 inset:0;
@@ -252,7 +249,6 @@ border-radius:14px;
 margin-top:12px;
 font-size:18px;
 font-weight:700;
-line-height:1.4;
 }
 
 .modal-price{
@@ -283,8 +279,6 @@ background:#222;
 color:#fff;
 }
 
-/* FOOTER */
-
 footer{
 margin-top:28px;
 padding:18px 16px 28px;
@@ -303,86 +297,6 @@ margin-top:10px;
 font-size:11px;
 font-weight:600;
 text-align:center;
-}
-
-/* PWA POPUP */
-
-#pwaPopup{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.55);
-display:none;
-z-index:10000;
-padding:18px;
-align-items:center;
-justify-content:center;
-}
-
-.pwa-box{
-width:100%;
-max-width:420px;
-background:#fff;
-border-radius:22px;
-padding:22px;
-box-shadow:0 20px 40px rgba(0,0,0,.18);
-text-align:center;
-animation:showPop .25s ease;
-}
-
-@keyframes showPop{
-from{transform:translateY(20px);opacity:0}
-to{transform:translateY(0);opacity:1}
-}
-
-.pwa-logo{
-width:68px;
-height:68px;
-border-radius:18px;
-margin:auto auto 14px;
-display:block;
-}
-
-.pwa-title{
-font-size:22px;
-font-weight:700;
-margin-bottom:8px;
-}
-
-.pwa-text{
-font-size:14px;
-color:#666;
-margin-bottom:12px;
-line-height:1.6;
-}
-
-.pwa-steps{
-font-size:14px;
-line-height:1.8;
-background:#f8f4ea;
-padding:14px;
-border-radius:14px;
-margin-bottom:14px;
-}
-
-.pwa-btn,
-.pwa-close{
-width:100%;
-height:46px;
-border:none;
-border-radius:14px;
-font-weight:700;
-cursor:pointer;
-margin-top:8px;
-font-family:'Poppins',sans-serif;
-}
-
-.pwa-btn{
-background:linear-gradient(135deg,var(--gold),var(--gold2));
-}
-
-.pwa-close{
-background:#222;
-color:#fff;
 }
 
 @media(min-width:768px){
@@ -406,11 +320,11 @@ color:#fff;
 <div class="header-wrap">
 
 <div class="brand-row">
-<a href="/" class="logo-link" onclick="voltarInicio(event)">
+<button class="logo-btn" type="button" onclick="voltarInicio()">
 <img class="logo"
 src="https://i.ibb.co/fzH4Tk85/Chat-GPT-Image-24-04-2026-20-19-44.png"
 alt="Axé Shop">
-</a>
+</button>
 </div>
 
 <div class="top-search">
@@ -425,7 +339,6 @@ alt="Axé Shop">
 <div id="produtos" class="status">Carregando produtos...</div>
 </main>
 
-<!-- MODAL -->
 <div class="modal" id="modalProduto">
 <div class="modal-box">
 <img id="mImg" class="modal-img">
@@ -436,23 +349,6 @@ alt="Axé Shop">
 </div>
 </div>
 
-<!-- POPUP PWA -->
-<div id="pwaPopup">
-<div class="pwa-box">
-
-<img src="logo192.png" class="pwa-logo">
-
-<div class="pwa-title" id="pwaTitulo">Instalar Axé Shop</div>
-<div class="pwa-text" id="pwaTexto">Tenha acesso rápido como aplicativo.</div>
-
-<div class="pwa-steps" id="pwaSteps"></div>
-
-<button class="pwa-btn" id="pwaBtn">Instalar</button>
-<button class="pwa-close" onclick="fecharPWA()">Agora não</button>
-
-</div>
-</div>
-
 <footer>
 <div class="footer-mini">
 <p>Axé Shop é uma vitrine digital independente.</p>
@@ -460,9 +356,7 @@ alt="Axé Shop">
 <p>Alguns links podem gerar comissão de afiliado.</p>
 </div>
 
-<div class="footer-copy">
-© 2026 Axé Shop
-</div>
+<div class="footer-copy">© 2026 Axé Shop</div>
 </footer>
 
 <script>
@@ -470,18 +364,29 @@ function moeda(v){
 return Number(v || 0).toFixed(2);
 }
 
-/* VOLTAR HOME NO BANNER */
+/* FUNCIONA NO NAVEGADOR E NO APP PWA */
 
-function voltarInicio(e){
-e.preventDefault();
+function voltarInicio(){
 
-document.getElementById("buscar").value="";
+document.getElementById("buscar").value = "";
+
+/* fecha modal se estiver aberto */
+fecharModal();
+
+/* recarrega home */
 carregarProdutos("/produtos");
 
+/* remove rota de busca no app */
+if(location.pathname !== "/"){
+history.replaceState({}, "", "/");
+}
+
+/* sobe tela */
 window.scrollTo({
 top:0,
 behavior:"smooth"
 });
+
 }
 
 /* PRODUTOS */
@@ -515,8 +420,7 @@ const preco=moeda(p.price);
 const link=p.offerLink || "#";
 
 html+=`
-<div class="card"
-onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
+<div class="card" onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
 
 <div class="img-wrap">
 <img src="${img}" loading="lazy">
@@ -546,16 +450,16 @@ box.innerHTML="Erro ao carregar produtos.";
 
 }
 
-/* BUSCA */
-
 function buscarProduto(){
 
 const termo=document.getElementById("buscar").value.trim();
 
 if(!termo){
-carregarProdutos("/produtos");
+voltarInicio();
 return;
 }
+
+history.replaceState({}, "", "/");
 
 carregarProdutos("/buscar/" + encodeURIComponent(termo));
 
@@ -578,7 +482,6 @@ window.open(link,"_blank");
 };
 
 document.getElementById("modalProduto").style.display="block";
-
 }
 
 function fecharModal(){
@@ -603,100 +506,6 @@ ativo=mini;
 }
 
 },{passive:true});
-
-/* PWA */
-
-const ua=navigator.userAgent.toLowerCase();
-let deferredPrompt;
-
-function isIOS(){
-return /iphone|ipad|ipod/i.test(navigator.userAgent);
-}
-
-function isInApp(){
-return ua.includes("instagram") || ua.includes("fb") || ua.includes("messenger");
-}
-
-window.addEventListener("beforeinstallprompt",(e)=>{
-e.preventDefault();
-deferredPrompt=e;
-});
-
-function abrirPWA(){
-
-if(window.matchMedia('(display-mode: standalone)').matches) return;
-
-const popup=document.getElementById("pwaPopup");
-popup.style.display="flex";
-
-const titulo=document.getElementById("pwaTitulo");
-const texto=document.getElementById("pwaTexto");
-const steps=document.getElementById("pwaSteps");
-const btn=document.getElementById("pwaBtn");
-
-if(isInApp()){
-
-titulo.innerText="Abrir no Navegador";
-texto.innerText="Você está no Instagram ou Facebook.";
-steps.innerHTML="1. Toque em ⋮<br>2. Abrir no navegador<br>3. Depois instale o app";
-
-btn.innerText="Copiar Link";
-btn.onclick=()=>{
-navigator.clipboard.writeText(location.href);
-alert("Link copiado!");
-};
-
-return;
-}
-
-if(isIOS()){
-
-titulo.innerText="Instalar no iPhone";
-texto.innerText="Siga os passos:";
-steps.innerHTML="1. Compartilhar ⤴<br>2. Adicionar à Tela Inicial<br>3. Confirmar";
-
-btn.innerText="Entendi";
-btn.onclick=fecharPWA;
-return;
-}
-
-if(deferredPrompt){
-
-titulo.innerText="Instalar Aplicativo";
-texto.innerText="Instale Axé Shop agora.";
-steps.innerHTML="✔ Acesso rápido<br>✔ Funciona como app<br>✔ Mais leve";
-
-btn.innerText="Instalar Agora";
-
-btn.onclick=async()=>{
-deferredPrompt.prompt();
-await deferredPrompt.userChoice;
-fecharPWA();
-};
-
-return;
-}
-
-titulo.innerText="Instalar";
-texto.innerText="Use o menu do navegador.";
-steps.innerHTML="Chrome / Edge:<br>⋮ > Instalar aplicativo";
-
-btn.innerText="Entendi";
-btn.onclick=fecharPWA;
-
-}
-
-function fecharPWA(){
-document.getElementById("pwaPopup").style.display="none";
-}
-
-setTimeout(abrirPWA,2200);
-
-/* SERVICE WORKER */
-
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("service-worker.js");
-}
 
 /* START */
 
