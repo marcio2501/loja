@@ -51,6 +51,8 @@ color:var(--dark);
 overflow-x:hidden;
 }
 
+/* HEADER */
+
 header{
 position:sticky;
 top:0;
@@ -129,6 +131,8 @@ box-shadow:var(--shadow);
 font-family:'Poppins',sans-serif;
 }
 
+/* HEADER MINI */
+
 header.mini .brand-row{
 justify-content:flex-start;
 margin-bottom:8px;
@@ -144,6 +148,8 @@ max-height:52px;
 margin:0;
 border-radius:12px;
 }
+
+/* MAIN */
 
 .container{
 max-width:1500px;
@@ -220,6 +226,8 @@ background:linear-gradient(135deg,var(--gold),var(--gold2));
 font-family:'Poppins',sans-serif;
 }
 
+/* MODAL */
+
 .modal{
 position:fixed;
 inset:0;
@@ -249,6 +257,7 @@ border-radius:14px;
 margin-top:12px;
 font-size:18px;
 font-weight:700;
+line-height:1.4;
 }
 
 .modal-price{
@@ -279,6 +288,8 @@ background:#222;
 color:#fff;
 }
 
+/* FOOTER */
+
 footer{
 margin-top:28px;
 padding:18px 16px 28px;
@@ -298,6 +309,8 @@ font-size:11px;
 font-weight:600;
 text-align:center;
 }
+
+/* RESPONSIVO */
 
 @media(min-width:768px){
 .grid{grid-template-columns:repeat(3,minmax(0,1fr));}
@@ -320,16 +333,25 @@ text-align:center;
 <div class="header-wrap">
 
 <div class="brand-row">
-<button class="logo-btn" type="button" onclick="voltarInicio()">
-<img class="logo"
+<button class="logo-btn" type="button" onclick="voltarInicio()" aria-label="Voltar ao início">
+<img
+class="logo"
 src="https://i.ibb.co/fzH4Tk85/Chat-GPT-Image-24-04-2026-20-19-44.png"
 alt="Axé Shop">
 </button>
 </div>
 
 <div class="top-search">
-<input type="search" id="buscar" class="busca-input" placeholder="Buscar vela, guia, erva..." enterkeyhint="search">
-<button class="buscar-btn" onclick="buscarProduto()">Buscar</button>
+<input
+type="search"
+id="buscar"
+class="busca-input"
+placeholder="Buscar vela, guia, erva..."
+enterkeyhint="search">
+
+<button class="buscar-btn" onclick="buscarProduto()">
+Buscar
+</button>
 </div>
 
 </div>
@@ -339,13 +361,18 @@ alt="Axé Shop">
 <div id="produtos" class="status">Carregando produtos...</div>
 </main>
 
+<!-- MODAL -->
 <div class="modal" id="modalProduto">
 <div class="modal-box">
+
 <img id="mImg" class="modal-img">
+
 <div id="mTitulo" class="modal-title"></div>
 <div id="mPreco" class="modal-price"></div>
+
 <button class="modal-btn" id="mComprar">Comprar</button>
 <button class="fechar-btn" onclick="fecharModal()">Fechar</button>
+
 </div>
 </div>
 
@@ -364,24 +391,26 @@ function moeda(v){
 return Number(v || 0).toFixed(2);
 }
 
-/* FUNCIONA NO NAVEGADOR E NO APP PWA */
+/* =========================
+   VOLTAR INÍCIO
+   funciona navegador + app
+========================= */
 
 function voltarInicio(){
 
 document.getElementById("buscar").value = "";
 
-/* fecha modal se estiver aberto */
 fecharModal();
 
-/* recarrega home */
-carregarProdutos("/produtos");
+/* força nova vitrine sem repetir */
+carregarProdutos("/produtos?refresh=1&t=" + Date.now());
 
-/* remove rota de busca no app */
+/* limpa rota */
 if(location.pathname !== "/"){
 history.replaceState({}, "", "/");
 }
 
-/* sobe tela */
+/* sobe topo */
 window.scrollTo({
 top:0,
 behavior:"smooth"
@@ -389,9 +418,11 @@ behavior:"smooth"
 
 }
 
-/* PRODUTOS */
+/* =========================
+   CARREGAR PRODUTOS
+========================= */
 
-async function carregarProdutos(url="/produtos"){
+async function carregarProdutos(url="/produtos?refresh=1"){
 
 const box=document.getElementById("produtos");
 
@@ -400,10 +431,19 @@ box.innerHTML="Carregando produtos...";
 
 try{
 
-const r=await fetch(url,{cache:"no-store"});
+const r=await fetch(url,{
+cache:"no-store"
+});
+
 const data=await r.json();
 
-if(!data?.data?.productOfferV2?.nodes){
+if(
+!data ||
+!data.data ||
+!data.data.productOfferV2 ||
+!data.data.productOfferV2.nodes ||
+data.data.productOfferV2.nodes.length===0
+){
 box.innerHTML="Nenhum produto encontrado.";
 return;
 }
@@ -414,22 +454,31 @@ let html='<div class="grid">';
 
 produtos.forEach(p=>{
 
-const nome=(p.productName || "Produto").replace(/'/g,"");
+const nome=(p.productName || "Produto")
+.replace(/'/g,"")
+.replace(/"/g,"");
+
 const img=p.imageUrl || "";
 const preco=moeda(p.price);
 const link=p.offerLink || "#";
 
 html+=`
-<div class="card" onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
+<div class="card"
+onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
 
 <div class="img-wrap">
-<img src="${img}" loading="lazy">
+<img
+src="${img}"
+loading="lazy"
+onerror="this.src='https://via.placeholder.com/400?text=Produto'">
 </div>
 
 <div class="title">${nome}</div>
+
 <div class="price">R$ ${preco}</div>
 
-<button class="btn"
+<button
+class="btn"
 onclick="event.stopPropagation();window.open('${link}','_blank')">
 Comprar
 </button>
@@ -445,10 +494,16 @@ box.className="";
 box.innerHTML=html;
 
 }catch(e){
+
 box.innerHTML="Erro ao carregar produtos.";
+
 }
 
 }
+
+/* =========================
+   BUSCA
+========================= */
 
 function buscarProduto(){
 
@@ -461,15 +516,25 @@ return;
 
 history.replaceState({}, "", "/");
 
-carregarProdutos("/buscar/" + encodeURIComponent(termo));
+carregarProdutos(
+"/buscar/" +
+encodeURIComponent(termo) +
+"?t=" + Date.now()
+);
 
 }
 
 document.getElementById("buscar").addEventListener("keydown",function(e){
-if(e.key==="Enter") buscarProduto();
+
+if(e.key==="Enter"){
+buscarProduto();
+}
+
 });
 
-/* MODAL */
+/* =========================
+   MODAL
+========================= */
 
 function abrirModal(nome,img,preco,link){
 
@@ -482,6 +547,7 @@ window.open(link,"_blank");
 };
 
 document.getElementById("modalProduto").style.display="block";
+
 }
 
 function fecharModal(){
@@ -489,10 +555,16 @@ document.getElementById("modalProduto").style.display="none";
 }
 
 document.getElementById("modalProduto").addEventListener("click",function(e){
-if(e.target.id==="modalProduto") fecharModal();
+
+if(e.target.id==="modalProduto"){
+fecharModal();
+}
+
 });
 
-/* HEADER MINI */
+/* =========================
+   HEADER MINI
+========================= */
 
 let ativo=false;
 
@@ -507,9 +579,19 @@ ativo=mini;
 
 },{passive:true});
 
-/* START */
+/* =========================
+   SERVICE WORKER
+========================= */
 
-carregarProdutos();
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js");
+}
+
+/* =========================
+   START
+========================= */
+
+carregarProdutos("/produtos?refresh=1&t=" + Date.now());
 </script>
 
 </body>
