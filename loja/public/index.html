@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Axé Shop</title>
 
@@ -13,20 +13,17 @@
 <style>
 :root{
 --bg:#f3eee4;
---bg2:#ece1ce;
 --gold:#c89d47;
---gold2:#e4bf77;
 --dark:#2c261f;
---muted:#756e66;
---shadow:0 10px 24px rgba(0,0,0,.07);
+--muted:#777;
+--shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 font-family:Poppins,sans-serif;
-background:linear-gradient(180deg,var(--bg),var(--bg2));
-color:var(--dark);
+background:var(--bg);
 }
 
 /* HEADER */
@@ -34,34 +31,55 @@ header{
 position:sticky;
 top:0;
 z-index:999;
-background:rgba(243,238,228,.94);
-padding:12px;
+background:#fff;
+padding:16px;
+transition:.3s;
+box-shadow:var(--shadow);
+}
+
+header.scrolled{
+display:flex;
+align-items:center;
+gap:10px;
+padding:8px 12px;
 }
 
 .logo{
 display:block;
 margin:auto;
-max-height:140px;
-cursor:pointer;
+max-height:120px;
+transition:.3s;
+}
+
+header.scrolled .logo{
+max-height:50px;
+margin:0;
 }
 
 .top-search{
-display:grid;
-grid-template-columns:1fr 100px;
-gap:8px;
 margin-top:10px;
+display:grid;
+grid-template-columns:1fr 90px;
+gap:8px;
+transition:.3s;
+}
+
+header.scrolled .top-search{
+margin-top:0;
+flex:1;
 }
 
 input{
-height:46px;
+height:44px;
 border:none;
-border-radius:14px;
-padding:0 12px;
+border-radius:12px;
+padding:0 10px;
+box-shadow:var(--shadow);
 }
 
 button{
 border:none;
-border-radius:14px;
+border-radius:12px;
 background:var(--gold);
 color:#fff;
 font-weight:700;
@@ -69,7 +87,12 @@ cursor:pointer;
 }
 
 /* GRID */
-.container{padding:14px;}
+.container{
+max-width:1400px;
+margin:auto;
+padding:14px;
+}
+
 .grid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
@@ -78,7 +101,7 @@ gap:12px;
 
 .card{
 background:#fff;
-border-radius:16px;
+border-radius:14px;
 padding:8px;
 box-shadow:var(--shadow);
 }
@@ -86,7 +109,7 @@ box-shadow:var(--shadow);
 .img-wrap{
 aspect-ratio:1/1;
 overflow:hidden;
-border-radius:12px;
+border-radius:10px;
 }
 
 .card img{
@@ -119,71 +142,97 @@ text-align:center;
 padding:30px;
 }
 
-/* MODAL */
-.modal{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.6);
-display:none;
+/* FOOTER */
+footer{
+padding:24px;
+font-size:13px;
+text-align:center;
+color:var(--muted);
+line-height:1.7;
 }
 
-.modal-box{
-background:#fff;
-max-width:400px;
-margin:30px auto;
-padding:10px;
-border-radius:14px;
+footer b{
+display:block;
+margin-top:10px;
+color:#000;
 }
 
-.modal-img{width:100%;border-radius:10px;}
-
+/* RESPONSIVO */
+@media(min-width:768px){
+.grid{grid-template-columns:repeat(3,1fr);}
+}
+@media(min-width:1100px){
+.grid{grid-template-columns:repeat(4,1fr);}
+}
 </style>
 </head>
 
 <body>
 
-<header>
+<header id="header">
+
 <img class="logo"
 src="https://i.ibb.co/fzH4Tk85/Chat-GPT-Image-24-04-2026-20-19-44.png"
 onclick="voltarInicio()">
 
 <div class="top-search">
-<input id="buscar" placeholder="Buscar...">
+<input id="buscar" placeholder="Buscar vela, guia, erva...">
 <button onclick="buscarProduto()">Buscar</button>
 </div>
+
 </header>
 
 <main class="container">
 <div id="produtos" class="status">Carregando produtos...</div>
 </main>
 
-<!-- MODAL -->
-<div class="modal" id="modalProduto">
-<div class="modal-box">
-<img id="mImg" class="modal-img">
-<div id="mTitulo"></div>
-<div id="mPreco"></div>
-<button id="mComprar">Comprar</button>
-<button onclick="fecharModal()">Fechar</button>
-</div>
-</div>
+<footer>
+<p>
+Axé Shop é uma vitrine digital dedicada a produtos espirituais e religiosos,
+como velas, guias, ervas, cristais e itens de proteção.
+</p>
+
+<p>
+Não realizamos vendas diretas. Ao clicar em um produto,
+você será redirecionado para o site parceiro responsável pela compra.
+</p>
+
+<p>
+Alguns links podem gerar comissão de afiliado, sem custo adicional para você.
+</p>
+
+<b>© 2026 Axé Shop</b>
+</footer>
 
 <script>
 
-/* AUTO RELOAD */
+/* HEADER DINÂMICO */
+window.addEventListener("scroll",()=>{
+if(window.scrollY > 80){
+header.classList.add("scrolled");
+}else{
+header.classList.remove("scrolled");
+}
+});
+
+/* AUTO RELOAD (1x seguro) */
 (function(){
-const url=new URL(location.href);
-if(!url.searchParams.get("r")){
-url.searchParams.set("r","1");
-location.replace(url);
+if(!sessionStorage.getItem("reload")){
+sessionStorage.setItem("reload","1");
+location.reload();
 }
 })();
 
+/* VARS */
 const box=document.getElementById("produtos");
 const inputBusca=document.getElementById("buscar");
 
 let todosProdutos=[];
+let pagina=0;
+let porPagina=20;
+let carregando=false;
 
+/* UTILS */
 function moeda(v){return Number(v||0).toFixed(2);}
 function limpar(t){return String(t||"").replace(/[<>"']/g,"");}
 function urlNova(u){return u+(u.includes("?")?"&":"?")+"t="+Date.now();}
@@ -192,55 +241,67 @@ function urlNova(u){return u+(u.includes("?")?"&":"?")+"t="+Date.now();}
 function cardHTML(p){
 return `
 <div class="card">
-<div class="img-wrap" onclick="abrirModal('${limpar(p.productName)}','${p.imageUrl}','${moeda(p.price)}','${p.offerLink}')">
-<img src="${p.imageUrl}">
+<div class="img-wrap">
+<img src="${p.imageUrl}" loading="lazy"
+onerror="this.src='https://via.placeholder.com/300'">
 </div>
 <div class="title">${limpar(p.productName)}</div>
 <div class="price">R$ ${moeda(p.price)}</div>
-<button class="btn" onclick="window.open('${p.offerLink}','_blank')">Comprar</button>
+<button class="btn" onclick="window.open('${p.offerLink}','_blank')">
+Comprar
+</button>
 </div>`;
 }
 
 /* RENDER */
-function render(lista){
+function renderBase(){
+box.innerHTML=`<div class="grid" id="grid"></div>`;
+}
 
-if(!lista.length){
+function renderMais(){
+if(carregando) return;
+carregando=true;
+
+const grid=document.getElementById("grid");
+const ini=pagina*porPagina;
+const lote=todosProdutos.slice(ini,ini+porPagina);
+
+if(!lote.length){
+carregando=false;
+return;
+}
+
+grid.insertAdjacentHTML("beforeend",lote.map(cardHTML).join(""));
+pagina++;
+carregando=false;
+}
+
+/* FETCH */
+async function carregarProdutos(url){
+
+box.innerHTML="Carregando...";
+pagina=0;
+
+try{
+const r=await fetch(url);
+const data=await r.json();
+
+todosProdutos=data?.data?.productOfferV2?.nodes||[];
+
+if(!todosProdutos.length){
 box.innerHTML="<div class='status'>Nenhum produto encontrado.</div>";
 return;
 }
 
-box.innerHTML=`
-<div class="grid">
-${lista.map(cardHTML).join("")}
-</div>
-`;
+renderBase();
+renderMais();
 
-}
-
-/* LOAD */
-async function carregarProdutos(url){
-
-box.innerHTML="Carregando...";
-
-try{
-const r=await fetch(url);
-
-if(!r.ok) throw new Error();
-
-const data=await r.json();
-
-const lista=data?.data?.productOfferV2?.nodes||[];
-
-todosProdutos=lista;
-
-render(lista);
-
-}catch(e){
-box.innerHTML="<div class='status'>Erro ao carregar.</div>";
+}catch{
+box.innerHTML="<div class='status'>Erro ao carregar produtos.</div>";
 }
 }
 
-/* 🔥 CORREÇÃO REAL */
+/* BUSCA */
 function buscarProduto(){
 
 const termo=inputBusca.value.trim();
@@ -250,32 +311,23 @@ carregarProdutos(urlNova("/produtos"));
 return;
 }
 
-/* compatível com seu server.js */
-carregarProdutos(
-urlNova("/buscar/"+encodeURIComponent(termo))
-);
+carregarProdutos(urlNova("/buscar/"+encodeURIComponent(termo)));
 
+window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* ENTER */
 inputBusca.addEventListener("keydown",e=>{
 if(e.key==="Enter") buscarProduto();
 });
 
-/* MODAL */
-function abrirModal(n,i,p,l){
-mImg.src=i;
-mTitulo.innerText=n;
-mPreco.innerText="R$ "+p;
-mComprar.onclick=()=>window.open(l);
-modalProduto.style.display="block";
+/* SCROLL INFINITO */
+window.addEventListener("scroll",()=>{
+if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 400){
+renderMais();
 }
+});
 
-function fecharModal(){
-modalProduto.style.display="none";
-}
-
-/* INICIO */
+/* VOLTAR */
 function voltarInicio(){
 carregarProdutos(urlNova("/produtos"));
 window.scrollTo({top:0});
