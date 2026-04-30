@@ -2,153 +2,307 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 
 <title>Axé Shop</title>
 
 <meta name="theme-color" content="#d7b26d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Axé Shop">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="logo192.png">
+<link rel="icon" href="logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
 --bg:#f3eee4;
+--bg2:#ece1ce;
 --gold:#c89d47;
+--gold2:#e4bf77;
 --dark:#2c261f;
---muted:#777;
---shadow:0 10px 25px rgba(0,0,0,.08);
+--muted:#756e66;
+--shadow:0 10px 24px rgba(0,0,0,.07);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
+html{
+scroll-behavior:smooth;
+-webkit-text-size-adjust:100%;
+}
 
 body{
 font-family:Poppins,sans-serif;
-background:var(--bg);
+background:linear-gradient(180deg,var(--bg),var(--bg2));
+color:var(--dark);
+overflow-x:hidden;
 }
 
 /* HEADER */
+
 header{
 position:sticky;
 top:0;
 z-index:999;
-background:#fff;
-padding:16px;
-transition:.3s;
-box-shadow:var(--shadow);
-}
-
-header.scrolled{
-display:flex;
-align-items:center;
-gap:10px;
-padding:8px 12px;
+background:rgba(243,238,228,.94);
+backdrop-filter:blur(12px);
+padding:12px;
+border-bottom:1px solid rgba(0,0,0,.04);
 }
 
 .logo{
 display:block;
 margin:auto;
-max-height:120px;
-transition:.3s;
-}
-
-header.scrolled .logo{
-max-height:50px;
-margin:0;
+max-width:100%;
+max-height:160px;
+border-radius:18px;
 }
 
 .top-search{
-margin-top:10px;
 display:grid;
-grid-template-columns:1fr 90px;
+grid-template-columns:1fr 100px;
 gap:8px;
-transition:.3s;
-}
-
-header.scrolled .top-search{
-margin-top:0;
-flex:1;
+max-width:780px;
+margin:12px auto 0;
 }
 
 input{
-height:44px;
+height:46px;
 border:none;
-border-radius:12px;
-padding:0 10px;
+outline:none;
+border-radius:14px;
+padding:0 14px;
+font-size:14px;
+font-family:Poppins,sans-serif;
 box-shadow:var(--shadow);
 }
 
 button{
 border:none;
-border-radius:12px;
-background:var(--gold);
-color:#fff;
-font-weight:700;
 cursor:pointer;
+font-family:Poppins,sans-serif;
 }
 
-/* GRID */
+.buscar-btn,.btn,.modal-btn,.pwa-btn{
+background:linear-gradient(135deg,var(--gold),var(--gold2));
+font-weight:700;
+}
+
+.buscar-btn{
+height:46px;
+border-radius:14px;
+}
+
 .container{
-max-width:1400px;
+max-width:1500px;
 margin:auto;
 padding:14px;
 }
 
+.status{
+padding:30px;
+text-align:center;
+font-weight:600;
+color:var(--muted);
+}
+
+/* GRID */
+
 .grid{
 display:grid;
-grid-template-columns:repeat(2,1fr);
+grid-template-columns:repeat(2,minmax(0,1fr));
 gap:12px;
 }
 
 .card{
 background:#fff;
-border-radius:14px;
+border-radius:18px;
 padding:8px;
 box-shadow:var(--shadow);
+display:flex;
+flex-direction:column;
+contain:content;
 }
 
 .img-wrap{
 aspect-ratio:1/1;
 overflow:hidden;
-border-radius:10px;
+border-radius:14px;
+background:#f2f2f2;
 }
 
 .card img{
 width:100%;
 height:100%;
 object-fit:cover;
+display:block;
 }
 
 .title{
+margin-top:8px;
 font-size:13px;
-margin-top:6px;
-height:36px;
+font-weight:600;
+line-height:1.35;
+height:38px;
 overflow:hidden;
+display:-webkit-box;
+-webkit-line-clamp:2;
+-webkit-box-orient:vertical;
 }
 
 .price{
-color:var(--gold);
+margin-top:8px;
+font-size:19px;
 font-weight:700;
+color:var(--gold);
 }
 
 .btn{
-margin-top:6px;
-height:36px;
-width:100%;
+margin-top:8px;
+height:40px;
+border-radius:12px;
 }
 
-/* STATUS */
-.status{
+/* MODAL */
+
+.modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.55);
+display:none;
+z-index:9999;
+padding:14px;
+overflow:auto;
+}
+
+.modal-box{
+background:#fff;
+max-width:520px;
+margin:20px auto;
+border-radius:20px;
+padding:14px;
+}
+
+.modal-img{
+width:100%;
+aspect-ratio:1/1;
+object-fit:cover;
+border-radius:14px;
+}
+
+.modal-title{
+margin-top:12px;
+font-size:18px;
+font-weight:700;
+}
+
+.modal-price{
+margin-top:8px;
+font-size:24px;
+font-weight:700;
+color:var(--gold);
+}
+
+.modal-btn,.fechar-btn{
+width:100%;
+height:46px;
+border-radius:12px;
+margin-top:12px;
+font-weight:700;
+}
+
+.fechar-btn{
+background:#222;
+color:#fff;
+}
+
+/* PWA */
+
+#pwaPopup{
+position:fixed;
+inset:0;
+display:none;
+background:rgba(0,0,0,.55);
+z-index:10000;
+align-items:center;
+justify-content:center;
+padding:18px;
+}
+
+.pwa-box{
+width:100%;
+max-width:420px;
+background:#fff;
+border-radius:22px;
+padding:22px;
 text-align:center;
-padding:30px;
+box-shadow:0 20px 40px rgba(0,0,0,.18);
+}
+
+.pwa-logo{
+width:72px;
+height:72px;
+border-radius:18px;
+display:block;
+margin:auto auto 14px;
+}
+
+.pwa-title{
+font-size:22px;
+font-weight:700;
+margin-bottom:8px;
+}
+
+.pwa-text{
+font-size:14px;
+color:#666;
+line-height:1.6;
+margin-bottom:12px;
+}
+
+.pwa-steps{
+background:#f8f4ea;
+padding:14px;
+border-radius:14px;
+font-size:14px;
+line-height:1.8;
+text-align:left;
+}
+
+.pwa-btn,.pwa-close{
+width:100%;
+height:46px;
+border-radius:14px;
+margin-top:10px;
+font-weight:700;
+}
+
+.pwa-close{
+background:#222;
+color:#fff;
 }
 
 /* FOOTER */
+
 footer{
-padding:24px;
-font-size:13px;
+margin-top:26px;
+padding:20px;
 text-align:center;
+font-size:12px;
 color:var(--muted);
-line-height:1.7;
 }
 
 footer b{
@@ -157,27 +311,31 @@ margin-top:10px;
 color:#000;
 }
 
-/* RESPONSIVO */
 @media(min-width:768px){
-.grid{grid-template-columns:repeat(3,1fr);}
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));}
 }
+
 @media(min-width:1100px){
-.grid{grid-template-columns:repeat(4,1fr);}
+.grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+}
+
+@media(min-width:1400px){
+.grid{grid-template-columns:repeat(5,minmax(0,1fr));}
 }
 </style>
 </head>
 
 <body>
 
-<header id="header">
+<header>
 
 <img class="logo"
 src="https://i.ibb.co/fzH4Tk85/Chat-GPT-Image-24-04-2026-20-19-44.png"
-onclick="voltarInicio()">
+alt="Axé Shop">
 
 <div class="top-search">
-<input id="buscar" placeholder="Buscar vela, guia, erva...">
-<button onclick="buscarProduto()">Buscar</button>
+<input type="search" id="buscar" placeholder="Buscar vela, guia, erva..." enterkeyhint="search">
+<button class="buscar-btn" onclick="buscarProduto()">Buscar</button>
 </div>
 
 </header>
@@ -186,155 +344,371 @@ onclick="voltarInicio()">
 <div id="produtos" class="status">Carregando produtos...</div>
 </main>
 
+<!-- MODAL -->
+<div class="modal" id="modalProduto">
+<div class="modal-box">
+
+<img id="mImg" class="modal-img">
+
+<div id="mTitulo" class="modal-title"></div>
+<div id="mPreco" class="modal-price"></div>
+
+<button class="modal-btn" id="mComprar">Comprar</button>
+<button class="fechar-btn" onclick="fecharModal()">Fechar</button>
+
+</div>
+</div>
+
+<!-- PWA -->
+<div id="pwaPopup">
+<div class="pwa-box">
+
+<img src="logo192.png" class="pwa-logo">
+
+<div class="pwa-title" id="pwaTitulo">Instalar Axé Shop</div>
+
+<div class="pwa-text" id="pwaTexto">
+Tenha acesso rápido como aplicativo.
+</div>
+
+<div class="pwa-steps" id="pwaSteps"></div>
+
+<button class="pwa-btn" id="pwaBtn">Instalar Agora</button>
+<button class="pwa-close" onclick="fecharPWA()">Agora não</button>
+
+</div>
+</div>
+
 <footer>
-<p>
-Axé Shop é uma vitrine digital dedicada a produtos espirituais e religiosos,
-como velas, guias, ervas, cristais e itens de proteção.
-</p>
-
-<p>
-Não realizamos vendas diretas. Ao clicar em um produto,
-você será redirecionado para o site parceiro responsável pela compra.
-</p>
-
-<p>
-Alguns links podem gerar comissão de afiliado, sem custo adicional para você.
-</p>
-
+<p>Axé Shop é uma vitrine digital independente.</p>
+<p>Pagamento e entrega são responsabilidade da loja de destino.</p>
+<p>Alguns links podem gerar comissão de afiliado.</p>
 <b>© 2026 Axé Shop</b>
 </footer>
 
 <script>
+/* =========================
+CONFIG
+========================= */
 
-/* HEADER DINÂMICO */
-window.addEventListener("scroll",()=>{
-if(window.scrollY > 80){
-header.classList.add("scrolled");
-}else{
-header.classList.remove("scrolled");
+const box = document.getElementById("produtos");
+const inputBusca = document.getElementById("buscar");
+
+let todosProdutos = [];
+let pagina = 0;
+let porPagina = 20;
+let carregando = false;
+let cache = {};
+let deferredPrompt = null;
+
+/* =========================
+UTILS
+========================= */
+
+function moeda(v){
+return Number(v || 0).toFixed(2);
 }
-});
 
-/* AUTO RELOAD (1x seguro) */
-(function(){
-if(!sessionStorage.getItem("reload")){
-sessionStorage.setItem("reload","1");
-location.reload();
+function limpar(txt){
+return String(txt || "")
+.replace(/</g,"")
+.replace(/>/g,"")
+.replace(/"/g,"")
+.replace(/'/g,"");
 }
-})();
 
-/* VARS */
-const box=document.getElementById("produtos");
-const inputBusca=document.getElementById("buscar");
+function urlNova(url){
+return url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+}
 
-let todosProdutos=[];
-let pagina=0;
-let porPagina=20;
-let carregando=false;
+/* =========================
+CARDS
+========================= */
 
-/* UTILS */
-function moeda(v){return Number(v||0).toFixed(2);}
-function limpar(t){return String(t||"").replace(/[<>"']/g,"");}
-function urlNova(u){return u+(u.includes("?")?"&":"?")+"t="+Date.now();}
-
-/* CARD */
 function cardHTML(p){
+
+const nome = limpar(p.productName || "Produto");
+const img = p.imageUrl || "";
+const preco = moeda(p.price);
+const link = p.offerLink || "#";
+
 return `
 <div class="card">
-<div class="img-wrap">
-<img src="${p.imageUrl}" loading="lazy"
-onerror="this.src='https://via.placeholder.com/300'">
+
+<div class="img-wrap"
+onclick="abrirModal('${nome}','${img}','${preco}','${link}')">
+
+<img
+src="${img}"
+loading="lazy"
+decoding="async"
+fetchpriority="low"
+onerror="this.src='https://via.placeholder.com/400?text=Produto'">
+
 </div>
-<div class="title">${limpar(p.productName)}</div>
-<div class="price">R$ ${moeda(p.price)}</div>
-<button class="btn" onclick="window.open('${p.offerLink}','_blank')">
+
+<div class="title">${nome}</div>
+<div class="price">R$ ${preco}</div>
+
+<button class="btn"
+onclick="window.open('${link}','_blank')">
 Comprar
 </button>
-</div>`;
+
+</div>
+`;
 }
 
-/* RENDER */
+/* =========================
+RENDER
+========================= */
+
 function renderBase(){
-box.innerHTML=`<div class="grid" id="grid"></div>`;
+box.className = "";
+box.innerHTML = `<div class="grid" id="gridProdutos"></div>`;
 }
 
 function renderMais(){
-if(carregando) return;
-carregando=true;
 
-const grid=document.getElementById("grid");
-const ini=pagina*porPagina;
-const lote=todosProdutos.slice(ini,ini+porPagina);
+if(carregando) return;
+carregando = true;
+
+requestAnimationFrame(()=>{
+
+const grid = document.getElementById("gridProdutos");
+
+const ini = pagina * porPagina;
+const fim = ini + porPagina;
+
+const lote = todosProdutos.slice(ini, fim);
 
 if(!lote.length){
-carregando=false;
+carregando = false;
 return;
 }
 
-grid.insertAdjacentHTML("beforeend",lote.map(cardHTML).join(""));
+grid.insertAdjacentHTML(
+"beforeend",
+lote.map(cardHTML).join("")
+);
+
 pagina++;
-carregando=false;
+carregando = false;
+
+});
+
 }
 
-/* FETCH */
-async function carregarProdutos(url){
+/* =========================
+FETCH
+========================= */
 
-box.innerHTML="Carregando...";
-pagina=0;
+async function carregarProdutos(url="/produtos"){
+
+box.className = "status";
+box.innerHTML = "Carregando produtos...";
+
+pagina = 0;
 
 try{
-const r=await fetch(url);
-const data=await r.json();
 
-todosProdutos=data?.data?.productOfferV2?.nodes||[];
+if(cache[url]){
+todosProdutos = cache[url];
+renderBase();
+renderMais();
+return;
+}
+
+const r = await fetch(url,{
+cache:"force-cache",
+keepalive:true
+});
+
+const data = await r.json();
+
+todosProdutos =
+data?.data?.productOfferV2?.nodes?.slice(0,160) || [];
+
+cache[url] = todosProdutos;
 
 if(!todosProdutos.length){
-box.innerHTML="<div class='status'>Nenhum produto encontrado.</div>";
+box.innerHTML = "Nenhum produto encontrado.";
 return;
 }
 
 renderBase();
 renderMais();
 
-}catch{
-box.innerHTML="<div class='status'>Erro ao carregar produtos.</div>";
-}
+}catch(e){
+box.innerHTML = "Erro ao carregar produtos.";
 }
 
-/* BUSCA */
+}
+
+/* =========================
+BUSCA
+========================= */
+
 function buscarProduto(){
 
-const termo=inputBusca.value.trim();
+const termo = inputBusca.value.trim();
 
 if(!termo){
 carregarProdutos(urlNova("/produtos"));
 return;
 }
 
-carregarProdutos(urlNova("/buscar/"+encodeURIComponent(termo)));
+carregarProdutos(
+urlNova("/buscar/" + encodeURIComponent(termo))
+);
 
-window.scrollTo({top:0,behavior:"smooth"});
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
+
 }
 
 inputBusca.addEventListener("keydown",e=>{
-if(e.key==="Enter") buscarProduto();
+if(e.key === "Enter") buscarProduto();
 });
 
-/* SCROLL INFINITO */
-window.addEventListener("scroll",()=>{
-if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 400){
+/* =========================
+INFINITE SCROLL
+========================= */
+
+const observer = new IntersectionObserver(entries=>{
+
+if(entries[0].isIntersecting){
 renderMais();
 }
+
+},{
+rootMargin:"600px"
 });
 
-/* VOLTAR */
-function voltarInicio(){
-carregarProdutos(urlNova("/produtos"));
-window.scrollTo({top:0});
+const sentinela = document.createElement("div");
+sentinela.style.height = "1px";
+document.body.appendChild(sentinela);
+observer.observe(sentinela);
+
+/* =========================
+MODAL
+========================= */
+
+function abrirModal(nome,img,preco,link){
+
+mImg.src = img;
+mTitulo.innerText = nome;
+mPreco.innerText = "R$ " + preco;
+
+mComprar.onclick = ()=>{
+window.open(link,"_blank");
+};
+
+modalProduto.style.display = "block";
 }
 
-/* START */
+function fecharModal(){
+modalProduto.style.display = "none";
+}
+
+modalProduto.onclick = e=>{
+if(e.target.id === "modalProduto"){
+fecharModal();
+}
+};
+
+/* =========================
+PWA
+========================= */
+
+window.addEventListener("beforeinstallprompt",(e)=>{
+e.preventDefault();
+deferredPrompt = e;
+});
+
+function isIOS(){
+return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+function isStandalone(){
+return window.matchMedia("(display-mode: standalone)").matches ||
+window.navigator.standalone === true;
+}
+
+function abrirPWA(){
+
+if(isStandalone()) return;
+
+const popup = document.getElementById("pwaPopup");
+popup.style.display = "flex";
+
+const btn = document.getElementById("pwaBtn");
+const steps = document.getElementById("pwaSteps");
+
+if(isIOS()){
+
+steps.innerHTML = `
+1. Toque em Compartilhar<br>
+2. Adicionar à Tela Inicial<br>
+3. Confirmar
+`;
+
+btn.innerText = "Entendi";
+btn.onclick = fecharPWA;
+return;
+}
+
+if(deferredPrompt){
+
+steps.innerHTML = `
+✔ Abre como app<br>
+✔ Mais rápido<br>
+✔ Fácil acesso
+`;
+
+btn.innerText = "Instalar Agora";
+
+btn.onclick = async()=>{
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+fecharPWA();
+};
+
+return;
+}
+
+steps.innerHTML = `
+Menu do navegador<br>
+Instalar aplicativo
+`;
+
+btn.innerText = "Entendi";
+btn.onclick = fecharPWA;
+}
+
+function fecharPWA(){
+document.getElementById("pwaPopup").style.display = "none";
+}
+
+/* =========================
+SERVICE WORKER
+========================= */
+
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js");
+}
+
+/* =========================
+START
+========================= */
+
 carregarProdutos(urlNova("/produtos"));
+
+setTimeout(()=>{
+abrirPWA();
+},2500);
 
 </script>
 
