@@ -1,4 +1,4 @@
-const CACHE_NAME = "axe-shop-v7";
+const CACHE_NAME = "axe-shop-v8";
 
 /* arquivos fixos do app */
 const urlsToCache = [
